@@ -1,0 +1,60 @@
+# Maxfiy ma'lumotlar (API kalitlar)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json.bak
+
+# Build chiqishi
+dist/
+build/
+.vite/
+
+# IDE va editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Log fayllar
+*.log
+logs/
+
+# Vaqtinchalik
+*.tmp
+*.temp
+.cache/
+
+# Python (agar kerak bo'lsa)
+.venv/
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+desktop.ini
+
+# Claude
+.claude/
+
+# Loyiha dublikati (eski bekap)
+1/
+
+# Boshqa
+*.zip
+*.tar
+*.tar.gz
+
+# Test va coverage
+coverage/
+.nyc_output/
