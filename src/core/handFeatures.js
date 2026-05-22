@@ -24,6 +24,7 @@ export function handSize(lm) {
 }
 
 // ── Barmoq holati (3-states): 0=yopiq, 1=ochiq, 2=yarim-egilgan (hook) ──
+// Yumshoqroq threshold — odamlar tabiiy holatda bajarsa ham aniqlansin
 function fingerExtState(lm, finger) {
   const tip = lm[TIPS[finger]];
   const pip = lm[PIPS[finger]];
@@ -32,13 +33,13 @@ function fingerExtState(lm, finger) {
 
   if (finger === 'thumb') {
     const ang = angleAt(lm[4], lm[3], lm[2]);
-    if (ang >= 150) return 1;
+    if (ang >= 130) return 1;     // juda yumshoq — tabiiy thumb
     return 0;
   }
   const ang = angleAt(tip, pip, mcp);
-  if (ang >= 155) return 1;       // to'liq cho'zilgan
-  if (ang >= 110) return 2;       // yarim-egilgan (hook)
-  return 0;                        // yopiq
+  if (ang >= 135) return 1;       // juda yumshoq — tabiiy cho'zilish
+  if (ang >= 90)  return 2;       // hook
+  return 0;
 }
 
 // ── Uzluksiz cho'zilish darajasi (0..1) — yumshoq scoring uchun ──
@@ -99,6 +100,8 @@ function palmNormal(lm) {
 function computeContacts(lm, hsize) {
   // Masofalar (hand size ga normallashtirilgan)
   const d_thumb_index   = dist3D(lm[4],  lm[8])  / hsize;
+  const d_thumb_middle  = dist3D(lm[4],  lm[12]) / hsize;  // YANGI — R uchun
+  const d_thumb_ring    = dist3D(lm[4],  lm[16]) / hsize;  // YANGI — N uchun
   const d_thumb_pinky   = dist3D(lm[4],  lm[20]) / hsize;
   const d_index_middle  = dist3D(lm[8],  lm[12]) / hsize;
   const d_middle_ring   = dist3D(lm[12], lm[16]) / hsize;
@@ -124,24 +127,29 @@ function computeContacts(lm, hsize) {
   // Bosh barmoq tip y koordinatasi: yon tomonda (A) yoki ustida (S)?
   // A: thumb.y ≈ index MCP y (yonida)
   // S: thumb.y < index MCP y (musht ustida)
-  const thumbAboveMcp = lm[4].y < lm[5].y - 0.02;
+  // Yumshoq threshold: thumb biroz tepada bo'lsa ham S
+  const thumbAboveMcp = lm[4].y < lm[5].y + 0.01;
 
   return {
     thumb_index_dist:  d_thumb_index,
+    thumb_middle_dist: d_thumb_middle,
+    thumb_ring_dist:   d_thumb_ring,
     thumb_pinky_dist:  d_thumb_pinky,
     index_middle_dist: d_index_middle,
 
-    thumb_index_touch:  d_thumb_index  < 0.30,
-    thumb_pinky_touch:  d_thumb_pinky  < 0.30,
+    thumb_index_touch:  d_thumb_index  < 0.35,
+    thumb_middle_touch: d_thumb_middle < 0.35,    // YANGI — R harfi
+    thumb_ring_touch:   d_thumb_ring   < 0.35,    // YANGI — N harfi
+    thumb_pinky_touch:  d_thumb_pinky  < 0.35,
     index_middle_close: d_index_middle < 0.30,
     index_middle_spread: d_index_middle >= 0.30,
     index_middle_crossed: indexMiddleCrossed,
 
-    fingers_spread:    avgSpread > 0.45,   // L harfi
-    fingers_close:     avgSpread < 0.30,   // M / Sh
+    fingers_spread:    avgSpread > 0.40,   // L harfi (0.45 → 0.40)
+    fingers_close:     avgSpread < 0.30,
 
-    thumb_inside_fist: thumbInside,         // S
-    thumb_outside_fist: !thumbInside,       // A
+    thumb_inside_fist: thumbInside,
+    thumb_outside_fist: !thumbInside,
     thumb_above_index_mcp: thumbAboveMcp,
   };
 }

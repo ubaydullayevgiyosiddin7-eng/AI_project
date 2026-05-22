@@ -60,16 +60,16 @@ export default function LoginPage({ onLogin }) {
             fontSize: 24, fontWeight: 900, color: '#fff',
             fontFamily: 'Space Grotesk, sans-serif',
             boxShadow: '0 8px 24px rgba(14,165,233,.35)',
-          }}>V</div>
+          }}>SH</div>
           <div style={{
             fontSize: 20, fontWeight: 800, letterSpacing: '-.02em',
             fontFamily: 'Space Grotesk, sans-serif',
-            background: 'linear-gradient(135deg, #0ea5e9, #6366f1)',
+            background: 'linear-gradient(135deg, #0ea5e9, #0c4a6e)',
             WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             backgroundClip: 'text',
-          }}>AIcenna</div>
+          }}>SignHand</div>
           <div style={{ fontSize: 11, color: 'var(--t3)', letterSpacing: '.1em', marginTop: 2 }}>
-            3D TA'LIM PLATFORMASI
+            IMO-ISHORA TILI · AI
           </div>
         </div>
 

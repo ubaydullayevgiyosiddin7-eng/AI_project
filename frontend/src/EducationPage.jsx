@@ -4,45 +4,45 @@ import BorderGlow from './BorderGlow';
 
 const SUBJECTS = [
   {
-    id: 'medicine',
-    icon: '🫀',
-    label: 'TIBBIYOT',
-    sublabel: '3D Anatomiya',
-    desc: "Ko'z, miya, yuqori tana va boshqa anatomik tuzilmalarni qo'l harakati va AI yordamida o'rganing.",
-    color: '#06b6d4',
-    glow: '190 90 75',
-    colors: ['#06b6d4','#6366f1','#38bdf8'],
+    id: 'sign',
+    icon: '🖐️',
+    label: 'IMO-ISHORA TILI',
+    sublabel: "O'zbek Daktil Alifbosi",
+    desc: "29 ta harf, 24 bosqichli dars, real-time tarjimon — MediaPipe AI orqali qo'l va yuz harakatlarini taniydi.",
+    color: '#0ea5e9',
+    glow: '200 80 75',
+    colors: ['#0ea5e9','#0c4a6e','#38bdf8'],
     active: true,
-    features: ['3D Interaktiv Modellar','Qo\'l bilan Boshqarish','AI Ovoz Tafsiri','24 Anatomik Qism'],
+    features: ['29 ta Daktil Harfi','Real-Time Tarjimon','Yuz Mimikasi Grammatika','24 Bosqichli Dars'],
   },
   {
-    id: 'chemistry',
-    icon: '⚗️',
-    label: 'KIMYO',
-    sublabel: '3D Molekulalar',
-    desc: "Molekulalar, kimyoviy reaksiyalar va atom tuzilishini 3D ko'rinishda o'rganing.",
-    color: '#10b981',
-    glow: '160 80 65',
-    colors: ['#10b981','#34d399','#6ee7b7'],
+    id: 'words',
+    icon: '💬',
+    label: 'SO\'ZLAR',
+    sublabel: 'Lug\'at Kursi',
+    desc: "Eng ko'p ishlatiladigan so'zlar: oila, salomlashish, raqamlar, ranglar va kunlar.",
+    color: '#16a34a',
+    glow: '140 70 45',
+    colors: ['#16a34a','#22c55e','#86efac'],
     active: false,
   },
   {
-    id: 'astronomy',
-    icon: '🔭',
-    label: 'ASTRONOMIYA',
-    sublabel: '3D Sayyoralar',
-    desc: "Quyosh tizimi, yulduzlar va galaktikalarni 3D interaktiv simulatsiyada kashf eting.",
-    color: '#8b5cf6',
-    glow: '265 75 68',
-    colors: ['#8b5cf6','#a78bfa','#c4b5fd'],
+    id: 'sentence',
+    icon: '📝',
+    label: 'GAP TUZISH',
+    sublabel: 'Grammatika',
+    desc: "Qisqa gaplar tuzish: savol, inkor va tasdiq jumlalari yuz mimikasi orqali.",
+    color: '#0891b2',
+    glow: '195 85 38',
+    colors: ['#0891b2','#06b6d4','#67e8f9'],
     active: false,
   },
   {
-    id: 'physics',
-    icon: '⚡',
-    label: 'FIZIKA',
-    sublabel: '3D Simulatsiya',
-    desc: "Mexanika, elektr va kvant fizikasi qonunlarini real-time simulatsiyada kuzating.",
+    id: 'conversation',
+    icon: '👥',
+    label: 'SUHBAT',
+    sublabel: 'Real Muloqot',
+    desc: "Kar-soqovlar bilan suhbatlashish uchun amaliy modullar — kelajakda qo'shiladi.",
     color: '#f59e0b',
     glow: '45 90 70',
     colors: ['#f59e0b','#fbbf24','#fcd34d'],
@@ -50,7 +50,7 @@ const SUBJECTS = [
   },
 ];
 
-export default function EducationPage({ navigateTo, dark }) {
+export default function EducationPage({ navigateTo, dark, openApp }) {
   const [hovered, setHovered] = useState(null);
   const [holoMedOpen, setHoloMedOpen] = useState(false);
   const t1 = dark ? '#f0f6ff' : '#0f172a';
@@ -60,6 +60,10 @@ export default function EducationPage({ navigateTo, dark }) {
   const border = dark ? 'rgba(99,180,255,.2)' : '#cbd5e1';
 
   const openMedicine = () => setHoloMedOpen(true);
+  const openInNewTab = () => {
+    if (openApp) openApp('app');
+    else window.open('http://localhost:5173', '_blank');
+  };
 
   return (
     <div style={{ padding:'0 0 80px', minHeight:'100vh' }}>
@@ -81,12 +85,12 @@ export default function EducationPage({ navigateTo, dark }) {
             <div style={{ display:'flex', alignItems:'center', gap:12 }}>
               <div style={{
                 width:28, height:28, borderRadius:8,
-                background:'linear-gradient(135deg,#06b6d4,#6366f1)',
+                background:'linear-gradient(135deg,#0ea5e9,#0c4a6e)',
                 display:'flex', alignItems:'center', justifyContent:'center',
-                fontSize:14, fontWeight:800, color:'#fff',
-              }}>H</div>
+                fontSize:12, fontWeight:800, color:'#fff',
+              }}>SH</div>
               <span style={{ color:'#e2e8f0', fontWeight:700, fontSize:14, fontFamily:'Space Grotesk' }}>
-                AIcenna — Tibbiyot Anatomiyasi
+                SignHand — Imo-Ishora Tili
               </span>
               <span style={{
                 padding:'2px 10px', borderRadius:100, fontSize:10, fontWeight:700,
@@ -97,7 +101,7 @@ export default function EducationPage({ navigateTo, dark }) {
             <div style={{ display:'flex', gap:8 }}>
               <a href="http://localhost:5173" target="_blank" rel="noreferrer" style={{
                 padding:'6px 14px', borderRadius:8, fontSize:12, fontWeight:600,
-                background:'rgba(6,182,212,.15)', border:'1px solid rgba(6,182,212,.35)',
+                background:'rgba(14,165,233,.15)', border:'1px solid rgba(14,165,233,.35)',
                 color:'#67e8f9', textDecoration:'none', cursor:'pointer',
               }}>⤢ To'liq ekran</a>
               <button onClick={() => setHoloMedOpen(false)} style={{
@@ -110,7 +114,7 @@ export default function EducationPage({ navigateTo, dark }) {
           {/* iframe */}
           <iframe
             src="http://localhost:5173"
-            title="AIcenna"
+            title="SignHand"
             allow="camera; microphone"
             style={{ flex:1, border:'none', width:'100%' }}
           />
@@ -238,7 +242,7 @@ export default function EducationPage({ navigateTo, dark }) {
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                         <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
-                      AIcenna ni Ochish
+                      SignHand ni Ochish
                     </div>
                   </div>
                 </BorderGlow>
@@ -352,12 +356,12 @@ export default function EducationPage({ navigateTo, dark }) {
           <div style={{ fontSize:28, flexShrink:0 }}>💡</div>
           <div>
             <div style={{ fontSize:14, fontWeight:700, color:dark?'#67e8f9':'#0891b2', marginBottom:4 }}>
-              Tibbiyot bo'limi haqida
+              Imo-Ishora Tili bo'limi haqida
             </div>
             <div style={{ fontSize:13.5, color:t2, lineHeight:1.65 }}>
-              AIcenna da qo'l harakatlari orqali 3D anatomik modellarni aylantiring,
-              qismlarni tanlang va AI yordamida ovozli anatomik tushuntirish oling.
-              Ko'z (24 qism), Miya 3D va Yuqori Tana modellari mavjud.
+              SignHand da qo'l va yuz harakatlari orqali o'zbek daktil alifbosini o'rganasiz.
+              MediaPipe AI texnologiyasi qo'l skeletoni va yuz mimikasini tahlil qiladi.
+              29 ta harf, 24 bosqichli dars, real-time tarjimon mavjud.
             </div>
           </div>
         </div>

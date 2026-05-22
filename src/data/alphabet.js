@@ -26,16 +26,17 @@ export const ALPHABET = [
   },
   {
     id: 'B', type: 'static', uzbekLabel: "B harfi",
-    description: "Index + middle yopishgan, tik",
-    signature: [0, 1, 1, 0, 0],
+    description: "Faqat ko'rsatkich barmoq tik, qolgani yopiq",
+    signature: [0, 1, 0, 0, 0],
     orientation: 'UP',
     difficulty: 1, xpReward: 10,
     variants: [
-      {
-        fingers: { thumb: 'closed', index: 'extended', middle: 'extended', ring: 'closed', pinky: 'closed' },
-        tipDistances: { index_middle: [0, 0.35] },
-      },
-      { fingers: { index: 'extended', middle: 'extended', ring: 'closed', pinky: 'closed' } },
+      // Thumb yopiq — qattiq variant
+      { fingers: { thumb: 'closed', index: 'extended', middle: 'closed', ring: 'closed', pinky: 'closed' } },
+      // Thumb chiqib tursa ham qabul (tabiiy holat)
+      { fingers: { index: 'extended', middle: 'closed', ring: 'closed', pinky: 'closed' } },
+      // Thumb to'liq chiqqan bo'lsa ham (lekin angle L emas)
+      { fingers: { thumb: 'extended', index: 'extended', middle: 'closed', ring: 'closed', pinky: 'closed' } },
     ],
   },
   {
@@ -50,13 +51,19 @@ export const ALPHABET = [
   },
   {
     id: 'E', type: 'static', uzbekLabel: "E harfi",
-    description: "Barmoqlar yarim egilgan (C / ilgak)",
+    description: "Barmoqlar yarim egilgan (C / ilgak shakli)",
     signature: [0, 2, 2, 2, 2],
     orientation: 'SIDE',
     difficulty: 2, xpReward: 15,
     variants: [
+      // Asosiy: barmoqlar yarim egilgan
       { fingers: { thumb: 'closed', index: 'closed', middle: 'closed', ring: 'closed', pinky: 'closed' },
-        bend: { index: [40, 110], middle: [40, 110] } },
+        bend: { index: [30, 130], middle: [30, 130] } },
+      // Yumshoq: 4 barmoq yopiq holatda ham (bend talab qilmaydi)
+      { fingers: { index: 'closed', middle: 'closed', ring: 'closed', pinky: 'closed' } },
+      // Yana: agar barcha yarim-egilgan bo'lsa (signature [0,2,2,2,2])
+      { fingers: { thumb: 'closed' },
+        bend: { index: [25, 130], middle: [25, 130], ring: [25, 130], pinky: [25, 130] } },
     ],
   },
   {
@@ -132,26 +139,29 @@ export const ALPHABET = [
   },
   {
     id: 'M', type: 'static', uzbekLabel: "M harfi",
-    description: "4 barmoq yopishgan + bosh yopiq",
+    description: "4 barmoq tik yopishgan, bosh yopiq",
     signature: [0, 1, 1, 1, 1],
     orientation: 'UP',
     difficulty: 2, xpReward: 15,
     variants: [
-      { fingers: { thumb: 'closed', index: 'extended', middle: 'extended', ring: 'extended', pinky: 'extended' },
-        tipDistances: { index_middle: [0, 0.32] } },
+      // Asosiy: 4 barmoq tik, thumb yopiq
+      { fingers: { thumb: 'closed', index: 'extended', middle: 'extended', ring: 'extended', pinky: 'extended' } },
     ],
   },
 
   // ═════════════ 3-QATOR: N O P Q R S ═════════════
   {
     id: 'N', type: 'static', uzbekLabel: "N harfi",
-    description: "Index + middle bir-biriga tegadi (kesishmagan)",
-    signature: [0, 1, 1, 0, 0],
+    description: "Bosh + nomsiz barmoq tegishadi, qolgan 3 ochiq",
+    signature: [0, 1, 1, 0, 1],
     orientation: 'UP',
     difficulty: 2, xpReward: 15,
     variants: [
-      { fingers: { thumb: 'closed', index: 'extended', middle: 'extended', ring: 'closed', pinky: 'closed' },
-        tipDistances: { index_middle: [0.05, 0.30] } },
+      // YANGI: 3 barmoq ochiq (index, middle, pinky), thumb-ring tegishadi
+      { fingers: { thumb: 'closed', index: 'extended', middle: 'extended', ring: 'closed', pinky: 'extended' },
+        tipDistances: { thumb_ring: [0, 0.40] } },
+      // Eski: index+middle ochiq
+      { fingers: { thumb: 'closed', index: 'extended', middle: 'extended', ring: 'closed', pinky: 'closed' } },
     ],
   },
   {
@@ -176,44 +186,56 @@ export const ALPHABET = [
   },
   {
     id: 'Q', type: 'static', uzbekLabel: "Q harfi",
-    description: "Thumb + index pastga, alohida (O emas)",
-    signature: [1, 1, 0, 0, 0],
-    orientation: 'DOWN',
-    difficulty: 3, xpReward: 20,
+    description: "Ko'rsatkich + o'rta barmoq tik, qolgani yopiq",
+    signature: [0, 1, 1, 0, 0],
+    orientation: 'UP',
+    difficulty: 2, xpReward: 15,
     variants: [
-      { fingers: { thumb: 'extended', index: 'extended', middle: 'closed', ring: 'closed', pinky: 'closed' } },
+      { fingers: { thumb: 'closed', index: 'extended', middle: 'extended', ring: 'closed', pinky: 'closed' } },
     ],
   },
   {
     id: 'R', type: 'static', uzbekLabel: "R harfi",
-    description: "Index + middle kesishgan",
-    signature: [0, 1, 1, 0, 0],
+    description: "Bosh + o'rta barmoq tegishadi, qolgan 3 ochiq",
+    signature: [0, 1, 0, 1, 1],
     orientation: 'UP',
     difficulty: 3, xpReward: 20,
     variants: [
+      // YANGI: 3 barmoq ochiq (index, ring, pinky), thumb-middle tegishadi
+      { fingers: { thumb: 'closed', index: 'extended', middle: 'closed', ring: 'extended', pinky: 'extended' },
+        tipDistances: { thumb_middle: [0, 0.40] } },
+      // Eski: index+middle kesishgan
       { fingers: { thumb: 'closed', index: 'extended', middle: 'extended', ring: 'closed', pinky: 'closed' },
         tipDistances: { index_middle: [0, 0.40] } },
     ],
   },
   {
     id: 'S', type: 'static', uzbekLabel: "S harfi",
-    description: "Musht, bosh barmoq barmoqlar ustida",
-    signature: [0, 0, 0, 0, 0],
+    description: "Bosh + ko'rsatkich tegishadi, qolgan 3 barmoq yopiq",
+    signature: [1, 1, 0, 0, 0],
     orientation: 'UP',
     difficulty: 2, xpReward: 15,
     variants: [
+      // YANGI (foydalanuvchi tanlovi): pinch shape
+      { fingers: { middle: 'closed', ring: 'closed', pinky: 'closed' },
+        tipDistances: { thumb_index: [0, 0.35] } },
+      // Eski: hamma yopiq (musht) — agar foydalanuvchi qaytsa
       { fingers: { thumb: 'closed', index: 'closed', middle: 'closed', ring: 'closed', pinky: 'closed' } },
+      { fingers: { index: 'closed', middle: 'closed', ring: 'closed', pinky: 'closed' } },
     ],
   },
 
   // ═════════════ 4-QATOR: T U V X Y Z ═════════════
   {
-    id: 'T', type: 'dynamic', uzbekLabel: "T harfi",
-    description: "Ko'rsatkich tik + chap-o'ng tebranish",
-    signature: [0, 1, 0, 0, 0],
-    rules: { fingers: { index: 'extended', middle: 'closed', ring: 'closed', pinky: 'closed' } },
-    dynamic: { motion: 'shake', holdPose: { index: 'extended' } },
+    id: 'T', type: 'static', uzbekLabel: "T harfi",
+    description: "3 barmoq pastga, bosh + chinchaloq yopiq",
+    signature: [0, 1, 1, 1, 0],
+    orientation: 'DOWN',
     difficulty: 3, xpReward: 20,
+    variants: [
+      // YANGI: index+middle+ring ochiq pastga, thumb+pinky yopiq
+      { fingers: { thumb: 'closed', index: 'extended', middle: 'extended', ring: 'extended', pinky: 'closed' } },
+    ],
   },
   {
     id: 'U', type: 'static', uzbekLabel: "U harfi",
@@ -227,23 +249,27 @@ export const ALPHABET = [
   },
   {
     id: 'V', type: 'static', uzbekLabel: "V harfi",
-    description: "Hamma barmoq ochiq, yopishgan (M ga o'xshash, lekin thumb ochiq)",
+    description: "Hamma 5 barmoq ochiq (ochiq kaft)",
     signature: [1, 1, 1, 1, 1],
     orientation: 'UP',
     difficulty: 1, xpReward: 10,
     variants: [
-      { fingers: { thumb: 'extended', index: 'extended', middle: 'extended', ring: 'extended', pinky: 'extended' },
-        tipDistances: { index_middle: [0.15, 0.50] } },
+      // Yumshoq: faqat hammasi cho'zilgan bo'lsa kifoya
+      { fingers: { thumb: 'extended', index: 'extended', middle: 'extended', ring: 'extended', pinky: 'extended' } },
     ],
   },
   {
     id: 'X', type: 'static', uzbekLabel: "X harfi",
-    description: "4 barmoq yopishgan, kaft gorizontal (yotgan)",
-    signature: [0, 1, 1, 1, 1],
-    orientation: 'SIDE',
+    description: "Ko'rsatkich barmoq ilmoq (yarim-egilgan), qolgani yopiq",
+    signature: [0, 2, 0, 0, 0],
+    orientation: 'UP',
     difficulty: 3, xpReward: 20,
     variants: [
-      { fingers: { thumb: 'closed', index: 'extended', middle: 'extended', ring: 'extended', pinky: 'extended' } },
+      // Asosiy: faqat index yarim-egilgan
+      { fingers: { thumb: 'closed', middle: 'closed', ring: 'closed', pinky: 'closed' },
+        bend: { index: [25, 110] } },
+      // Yopiq musht ham yumshoq qabul
+      { fingers: { middle: 'closed', ring: 'closed', pinky: 'closed' } },
     ],
   },
   {
@@ -285,24 +311,30 @@ export const ALPHABET = [
   },
   {
     id: 'Sh', type: 'static', uzbekLabel: "Sh harfi",
-    description: "M ga o'xshash, lekin kaft kameraga toza vertikal",
-    signature: [1, 1, 1, 1, 1],
-    orientation: 'FORWARD',
+    description: "3 barmoq tik (index, middle, ring) — bosh va chinchaloq yopiq",
+    signature: [0, 1, 1, 1, 0],
+    orientation: 'UP',
     difficulty: 2, xpReward: 15,
     variants: [
-      // Sh = hamma ochiq, kaft kameraga
-      { fingers: { thumb: 'extended', index: 'extended', middle: 'extended', ring: 'extended', pinky: 'extended' } },
-      // Yoki 4 barmoq tik, thumb yopiq
+      // YANGI: 3 barmoq tik, thumb+pinky yopiq
+      { fingers: { thumb: 'closed', index: 'extended', middle: 'extended', ring: 'extended', pinky: 'closed' } },
+      // Alternativ: 4 barmoq tik
       { fingers: { index: 'extended', middle: 'extended', ring: 'extended', pinky: 'extended' } },
     ],
   },
   {
     id: 'Ch', type: 'static', uzbekLabel: "Ch harfi",
-    description: "3 barmoq yarim egilgan, chinchaloq yopiq",
-    signature: [0, 2, 2, 2, 0],
+    description: "Bosh + ko'rsatkich tegishadi (OK shakli), qolgan 3 yopiq",
+    signature: [1, 1, 0, 0, 0],
     orientation: 'UP',
-    difficulty: 3, xpReward: 20,
+    difficulty: 2, xpReward: 15,
     variants: [
+      // YANGI (sizning shakli): thumb-index pinch + qolgan 3 yopiq
+      {
+        fingers: { middle: 'closed', ring: 'closed', pinky: 'closed' },
+        tipDistances: { thumb_index: [0, 0.40] },
+      },
+      // Eski: 3 barmoq yarim egilgan
       { fingers: { pinky: 'closed' },
         bend: { index: [30, 100], middle: [30, 100] } },
     ],

@@ -77,13 +77,56 @@ export function extractFaceFeatures(lm) {
   };
 }
 
-// Yuz grammatikasini aniqlash — gap modifikatori
+// ── Baseline o'rganish + EMA dinamik baseline ──
+let _baselineFrames = [];
+const _BASELINE_SIZE = 15;     // ~0.5 sek — tezroq tayyor
+let _baseline = null;
+const _EMA_ALPHA = 0.005;       // sekin yangilanadi (faqat neytral holatlarda)
+
+export function resetGrammarBaseline() {
+  _baselineFrames = [];
+  _baseline = null;
+}
+
+// Yuz grammatikasini aniqlash — RELATIV qiymat baseline'dan
 export function detectGrammar(faceFeatures) {
   if (!faceFeatures) return 'statement';
 
-  if (faceFeatures.eyebrowRaise > 0.06) return 'question';
-  if (faceFeatures.eyebrowRaise < -0.04) return 'negation';
+  const current = faceFeatures.eyebrowRaise;
+
+  // Baseline yig'ish (birinchi 15 freym)
+  if (_baselineFrames.length < _BASELINE_SIZE) {
+    _baselineFrames.push(current);
+    if (_baselineFrames.length === _BASELINE_SIZE) {
+      const sorted = [..._baselineFrames].sort((a, b) => a - b);
+      _baseline = sorted[Math.floor(sorted.length / 2)];  // median
+    }
+    return 'statement';
+  }
+
+  const delta = current - _baseline;
+
+  // Qoshlar yuqori → savol (yumshoq threshold)
+  if (delta > 0.012) {
+    return 'question';
+  }
+  // Qoshlar pastga → inkor (yumshoq threshold)
+  if (delta < -0.008) {
+    return 'negation';
+  }
+
+  // Neytral holat — baseline'ni asta yangilash (EMA — drift uchun)
+  _baseline = _baseline + _EMA_ALPHA * (current - _baseline);
+
+  // Og'iz
   if (faceFeatures.mouthAspect > 3.0) return 'intensity_high';
   if (faceFeatures.mouthAspect < 1.4 && faceFeatures.mouthOpen > 0.03) return 'intensity_low';
+
   return 'statement';
+}
+
+// Hozirgi delta qiymatini olish — debug uchun
+export function getEyebrowDelta(faceFeatures) {
+  if (!faceFeatures || _baseline === null) return null;
+  return faceFeatures.eyebrowRaise - _baseline;
 }

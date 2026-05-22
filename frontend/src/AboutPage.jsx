@@ -2,19 +2,19 @@ import React from 'react';
 import BorderGlow from './BorderGlow';
 
 const TECH = [
-  { icon:'🤖', n:'GPT-4o Vision',   d:"OpenAI eng zamonaviy multimodal modeli — anatomik savollar uchun", c:'#0ea5e9', g:'200 80 80' },
-  { icon:'🖐️', n:'MediaPipe Hands', d:"Qo'l imo-ishoralarini real vaqtda 21 nuqta bilan kuzatish",        c:'#10b981', g:'160 80 70' },
-  { icon:'⚛️', n:'React + R3F',     d:'React Three Fiber — 3D modellarni brauzerda render qilish',          c:'#38bdf8', g:'200 90 75' },
-  { icon:'📦', n:'Three.js',        d:'WebGL asosidagi 3D grafika kutubxonasi',                              c:'#f59e0b', g:'45 90 70'  },
-  { icon:'🎤', n:'Web Speech API',  d:"Brauzer o'rnatilgan nutq tanish va sintez texnologiyasi",           c:'#6366f1', g:'240 70 65' },
-  { icon:'🧬', n:'GLB/GLTF',       d:"3D anatomiya modellari — ko'z, miya, yuqori tana",                   c:'#8b5cf6', g:'265 75 68' },
+  { icon:'🤖', n:'MediaPipe Holistic', d:"Google AI: qo'l (21 nuqta), yuz (468 nuqta) va tana — brauzerda real-time", c:'#0ea5e9', g:'200 80 80' },
+  { icon:'🧠', n:'Decision Tree',      d:"Har harf uchun aniq qoidalar (signature + orientation + contacts)",         c:'#10b981', g:'160 80 70' },
+  { icon:'⚛️', n:'React 18 + Vite',    d:'Modern frontend — komponent-asoslangan UI, tez build',                       c:'#38bdf8', g:'200 90 75' },
+  { icon:'🎯', n:'Soft Scoring',       d:"Yumshoq aniqlash — barmoq holatlari uchun uzluksiz ball (0-1)",              c:'#f59e0b', g:'45 90 70'  },
+  { icon:'🎤', n:'Web Speech API',     d:"O'zbek tilida ovozli o'qish — brauzer nativ texnologiya",                    c:'#6366f1', g:'240 70 65' },
+  { icon:'⚡', n:'Client-Side',        d:'Server kerak emas — hammasi foydalanuvchi brauzerida ishlaydi',              c:'#8b5cf6', g:'265 75 68' },
 ];
 
 const CARDS = [
-  { icon:'🎯', t:'Maqsad', d:"Tibbiyot ta'limida 3D vizualizatsiya va sun'iy intellektni birlashtirish. Talabalar anatomik tuzilmalarni qo'l imo-ishoralari orqali boshqarib, AI dan ovozli tushuntirish olishlari mumkin.", color:'#818cf8', glow:'240 70 65' },
-  { icon:'🔬', t:'Yondashuv', d:"Interaktiv 3D modellarda 24+ ko'z qismi, miya loblari va yuqori tana tuzilmalari. Har bir qismni tanlaganda real anatomik ma'lumot va AI tafsiri beriladi.", color:'#38bdf8', glow:'200 90 75' },
-  { icon:'⚡', t:'Texnologiya', d:"MediaPipe qo'l kuzatish, Three.js 3D render, GPT-4o AI va Web Speech API birgalikda ishlatiladi. Brauzerda to'liq ishlaydi — hech qanday o'rnatish kerak emas.", color:'#34d399', glow:'160 80 65' },
-  { icon:'🛡️', t:'Xavfsizlik', d:"Barcha ma'lumotlar faqat sessiya davomida saqlanadi. Kamera faqat qo'l kuzatish uchun ishlatiladi va hech qanday yozib olinmaydi.", color:'#f472b6', glow:'330 80 70' },
+  { icon:'🎯', t:'Maqsad', d:"O'zbek imo-ishora tilini sun'iy intellekt yordamida o'rgatish. Kar-soqovlar bilan muloqotni osonlashtirish — 15-20 ming o'zbek aholisi uchun yangi imkoniyat.", color:'#0ea5e9', glow:'200 80 75' },
+  { icon:'🔬', t:'Yondashuv', d:"29 ta daktil harfi uchun aniq qoidalar yozilgan. Yuz mimikasi grammatika rolini bajaradi (savol, inkor). 24 bosqichli dars + erkin tarjimon.", color:'#0c4a6e', glow:'210 70 30' },
+  { icon:'⚡', t:'Texnologiya', d:"MediaPipe Holistic AI + Decision Tree classifier + soft scoring. Brauzerda to'liq ishlaydi — server kerak emas. Internet birinchi marta yetarli.", color:'#16a34a', glow:'140 70 45' },
+  { icon:'🛡️', t:'Xavfsizlik', d:"Barcha ma'lumotlar foydalanuvchi brauzerida saqlanadi. Kamera faqat tahlil uchun — hech qanday video yozib olinmaydi yoki yuborilmaydi.", color:'#f472b6', glow:'330 80 70' },
 ];
 
 export default function AboutPage({ navigateTo, dark }) {
@@ -68,33 +68,34 @@ export default function AboutPage({ navigateTo, dark }) {
                 fontSize:'clamp(38px,4.8vw,68px)', fontWeight:900,
                 lineHeight:1.05, letterSpacing:'-.045em',
                 color:t1, marginBottom:8,
-                textShadow: dark?'0 0 50px rgba(99,102,241,.3)':'none',
+                textShadow: dark?'0 0 50px rgba(14,165,233,.3)':'none',
               }}>
-                AIcenna
+                SignHand
               </h1>
               <h1 style={{
                 fontFamily:"'Space Grotesk',sans-serif",
                 fontSize:'clamp(38px,4.8vw,68px)', fontWeight:900,
                 lineHeight:1.05, letterSpacing:'-.045em',
                 marginBottom:24,
-                background:'linear-gradient(135deg,#38bdf8 0%,#818cf8 50%,#f472b6 100%)',
+                background:'linear-gradient(135deg,#0ea5e9 0%,#0c4a6e 50%,#16a34a 100%)',
                 WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
                 backgroundClip:'text',
               }}>
-                3D Anatomiya
+                Imo-Ishora Tili AI
               </h1>
 
               <p style={{
                 fontSize:'clamp(15px,1.3vw,17.5px)', lineHeight:1.85,
                 color:t2, maxWidth:480, marginBottom:28,
               }}>
-                Tibbiyot talabalari va professionallar uchun yaratilgan interaktiv 3D anatomiya platformasi.
-                Qo'l imo-ishoralari, AI va real modellar bilan anatomiyani yangi darajada o'rganing.
+                O'zbek daktil alifbosini AI yordamida o'rgatuvchi platforma.
+                MediaPipe AI qo'l va yuz harakatlarini real vaqtda taniydi.
+                Kar-soqovlar bilan muloqotni osonlashtiradi.
               </p>
 
               <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
-                {['GPT-4o AI','3D Modelli',"Qo'l Boshqaruvi","O'zbek tilida",'Bepul'].map((b,i) => {
-                  const colors = ['#38bdf8','#818cf8','#34d399','#f59e0b','#f472b6'];
+                {['MediaPipe AI','29 Harf',"Tarjimon","Yuz Grammatika",'Bepul'].map((b,i) => {
+                  const colors = ['#0ea5e9','#0c4a6e','#16a34a','#f59e0b','#f472b6'];
                   return (
                     <span key={b} style={{
                       padding:'6px 15px', borderRadius:100, fontSize:12, fontWeight:700,

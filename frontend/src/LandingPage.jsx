@@ -1,8 +1,8 @@
-// LandingPage.jsx — HoloMed AI Ta'lim Platformasi
+// LandingPage.jsx — SignHand AI Imo-Ishora Tili Platformasi
 import React from 'react';
 import BorderGlow from './BorderGlow';
 
-export default function LandingPage({ navigateTo, dark }) {
+export default function LandingPage({ navigateTo, dark, openApp }) {
   const t1 = dark ? '#f0f6ff' : '#0f172a';
   const t2 = dark ? 'rgba(196,220,255,.85)' : '#374151';
   const t3 = dark ? 'rgba(148,180,220,.65)' : '#94a3b8';
@@ -10,19 +10,19 @@ export default function LandingPage({ navigateTo, dark }) {
   const cardBg = dark ? 'rgba(4,14,36,.82)' : '#ffffff';
 
   const FEATURES = [
-    { icon:'🧠', t:'3D Anatomiya', d:'Ko\'z, miya va yuqori tana modellarini real vaqtda aylantirib, har bir qismni batafsil o\'rganing.', c:'#0ea5e9', g:'200 80 80' },
-    { icon:'🖐️', t:'Qo\'l Bilan Boshqarish', d:'MediaPipe texnologiyasi orqali qo\'l imo-ishoralari bilan modalni aylantirasiz, kattalashtirish, qismlar tanlaysiz.', c:'#6366f1', g:'240 70 65' },
-    { icon:'🤖', t:'AI Tafsir', d:'Har bir anatomik qismni tanlaganda GPT-4o sun\'iy intellekti o\'zbek tilida ovozli tushuntirish beradi.', c:'#10b981', g:'160 80 65' },
-    { icon:'🔪', t:'Scalpel Funksiyasi', d:'Virtual scalpel bilan model ustidan chizib, kesim qilish va anatomik tuzilmalarni tahlil qilish imkoni.', c:'#f59e0b', g:'45 90 70' },
-    { icon:'💥', t:'Explode Ko\'rish', d:'Modalni qismlarga ajratib, ichki tuzilmalarni alohida ko\'rish va tushunish.', c:'#a855f7', g:'270 75 68' },
-    { icon:'🎤', t:'Ovoz Bilan So\'rov', d:'Ovoz buyruqlari orqali AI ga anatomik savollar bering va darhol javob oling.', c:'#ef4444', g:'0 85 65' },
+    { icon:'🖐️', t:'29 ta Daktil Harfi', d:'O\'zbek imo-ishora alifbosining barcha 29 ta harfini bosqichma-bosqich o\'rganing — statik va harakatli.', c:'#0ea5e9', g:'200 80 80' },
+    { icon:'📷', t:'Real-Time Tanish', d:'MediaPipe AI texnologiyasi qo\'l va yuz harakatlarini sekundiga 30 marta tahlil qilib, harfni darrov aniqlaydi.', c:'#0c4a6e', g:'210 75 30' },
+    { icon:'💬', t:'Jonli Tarjimon', d:'Qo\'l harakatlaringizni real vaqtda matnga aylantiradi va o\'zbek tilida ovoz bilan o\'qib beradi.', c:'#16a34a', g:'140 70 45' },
+    { icon:'👤', t:'Yuz Grammatikasi', d:'Qoshlar ko\'tarilsa savol belgisi, pastga tushsa inkor — yuz mimikasi ham gap qismi.', c:'#f59e0b', g:'45 90 70' },
+    { icon:'📚', t:'24 ta Dars', d:'Bosqichli dars rejasi: oddiy harflardan boshlab, harakatli harflar, so\'zlar va gaplargacha.', c:'#a855f7', g:'270 75 68' },
+    { icon:'🏆', t:'Sertifikat va XP', d:'Har bir bosqichni tugatganda XP, daraja va sertifikat olasiz. Geymifikatsiya bilan o\'rgatish.', c:'#ef4444', g:'0 85 65' },
   ];
 
   const STATS = [
-    { n:'24+',   l:"Ko'z qismlari" },
-    { n:'3',     l:'3D Model'      },
-    { n:'100%',  l:'O\'zbek tilida' },
-    { n:'AI',    l:"Ovozli tafsir" },
+    { n:'29',    l:'Daktil harflari' },
+    { n:'24',    l:'Bosqichli dars'   },
+    { n:'85%',   l:'Aniqlik darajasi' },
+    { n:'AI',    l:"MediaPipe + GPT"  },
   ];
 
   return (
@@ -44,7 +44,7 @@ export default function LandingPage({ navigateTo, dark }) {
               color: dark?'#34d399':'#059669',
             }}>
               <span style={{ width:7, height:7, borderRadius:'50%', background:'#10b981', boxShadow:'0 0 6px #10b981' }}/>
-              3D Anatomiya AI Platformasi
+              O'zbek Imo-Ishora Tili AI Platformasi
             </div>
 
             <div style={{
@@ -61,30 +61,30 @@ export default function LandingPage({ navigateTo, dark }) {
                 lineHeight:1.08, letterSpacing:'-.04em',
                 color:t1, marginBottom:16,
               }}>
-                Anatomiyani{' '}
+                Imo-ishora tilini{' '}
                 <span style={{
-                  background:'linear-gradient(135deg,#0ea5e9,#6366f1)',
+                  background:'linear-gradient(135deg,#0ea5e9,#0c4a6e)',
                   WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
                 }}>
-                  3D va AI
+                  AI yordamida
                 </span>
-                {" "}bilan o’rganing
+                {" "}o'rganing
               </h1>
               <p style={{ fontSize:'clamp(14px,1.3vw,17px)', lineHeight:1.82, color:t2, margin:0 }}>
-                Interaktiv 3D modellarda qo’l imo-ishoralari va sun’iy intellekt
-                yordamida anatomiyani chuqur o’rganing. Ko’z, miya va inson tanasi
-                qismlarini real vaqtda tadqiq eting.
+                O'zbek daktil alifbosining 29 ta harfini bosqichma-bosqich o'rganing.
+                Real vaqtda qo'l va yuz harakatlarini matnga aylantiruvchi tarjimon —
+                kar-soqovlar bilan muloqotni osonlashtiradi.
               </p>
             </div>
 
             <div style={{ display:'flex', gap:14, flexWrap:'wrap', marginBottom:40 }}>
-              <button onClick={() => navigateTo('education')} className="btn btn-p btn-lg">
+              <button onClick={() => openApp && openApp('app')} className="btn btn-p btn-lg">
                 <span>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
                       stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                  O'rganishni Boshlash
+                  Ilovani ochish
                 </span>
               </button>
               <button onClick={() => navigateTo('about')} style={{
@@ -140,9 +140,9 @@ export default function LandingPage({ navigateTo, dark }) {
               animation:'orb-cw 60s linear infinite',
             }}>
               {[
-                { e:'👁', l:"Ko'z", top:'0%',   left:'50%' },
-                { e:'🧠', l:'Miya', top:'20%',  left:'93%' },
-                { e:'🫀', l:'Tana', top:'73%',  left:'93%' },
+                { e:'✋', l:"Qo'l", top:'0%',   left:'50%' },
+                { e:'👤', l:'Yuz',  top:'20%',  left:'93%' },
+                { e:'💬', l:'Matn', top:'73%',  left:'93%' },
                 { e:'🖐️', l:"Qo'l", top:'100%', left:'50%' },
                 { e:'🤖', l:'AI',   top:'73%',  left:'7%'  },
                 { e:'🔊', l:'Ovoz', top:'20%',  left:'7%'  },
@@ -209,18 +209,18 @@ export default function LandingPage({ navigateTo, dark }) {
           colors={['#0ea5e9','#6366f1','#10b981']}>
           <div style={{ padding:'48px 40px' }}>
             <h2 style={{ fontFamily:"'Space Grotesk',sans-serif", fontSize:'clamp(28px,3vw,40px)', fontWeight:900, color:t1, marginBottom:14, letterSpacing:'-.03em' }}>
-              3D Ta'limni Bugun Boshlang
+              Imo-Ishorani Bugun O'rganing
             </h2>
             <p style={{ fontSize:15, color:t2, marginBottom:32, maxWidth:480, margin:'0 auto 32px' }}>
-              Sun'iy intellekt va qo'l boshqaruvi bilan anatomiyani yangi darajada o'rganing.
-              Tanlang, aylantirib ko'ring, so'rang.
+              Sun'iy intellekt va MediaPipe AI bilan o'zbek imo-ishora tilini o'rganing.
+              Mashq qiling, tarjima qiling, ovozda eshiting.
             </p>
-            <button onClick={() => navigateTo('education')} className="btn btn-p btn-lg">
+            <button onClick={() => openApp && openApp('app')} className="btn btn-p btn-lg">
               <span>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <path d="M5 3l14 9-14 9V3z" fill="white"/>
                 </svg>
-                Hoziroq Boshlash
+                Ilovani Ochish
               </span>
             </button>
           </div>

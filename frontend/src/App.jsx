@@ -1,4 +1,4 @@
-// App.jsx — AIcenna 3D Ta'lim Platformasi
+// App.jsx — SignHand AI Landing Site
 import React, { useState, useEffect } from 'react';
 
 import LandingPage    from './LandingPage';
@@ -9,25 +9,28 @@ import LoginPage      from './LoginPage';
 import FloatingLines  from './FloatingLines';
 import { isLoggedIn, getUser, logout } from './utils/auth';
 
+// SignHand AI ilovasi URL (asosiy ishlovchi loyiha)
+const SIGNHAND_APP_URL = 'http://localhost:5173';
+
 /* ── Logo ─────────────────────────────────────────────────── */
 const Logo = ({ onClick }) => (
   <div onClick={onClick} style={{ display:'flex', alignItems:'center', gap:11, cursor:'pointer' }}>
     <div style={{
       width:36, height:36, borderRadius:10, flexShrink:0,
-      background:'linear-gradient(135deg,#06b6d4,#6366f1)',
+      background:'linear-gradient(135deg,#0ea5e9,#0c4a6e)',
       display:'flex', alignItems:'center', justifyContent:'center',
-      color:'#fff', fontFamily:'Space Grotesk', fontWeight:800, fontSize:16,
-      boxShadow:'0 4px 16px rgba(6,182,212,.35)',
-    }}>H</div>
+      color:'#fff', fontFamily:'Space Grotesk', fontWeight:800, fontSize:14,
+      boxShadow:'0 4px 16px rgba(14,165,233,.35)',
+    }}>SH</div>
     <div>
       <div style={{
         fontSize:15, fontFamily:'Space Grotesk', fontWeight:800,
         letterSpacing:'-.03em', lineHeight:1,
-        background:'linear-gradient(135deg,#06b6d4,#6366f1)',
+        background:'linear-gradient(135deg,#0ea5e9,#0c4a6e)',
         WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
-      }}>AIcenna</div>
+      }}>SignHand</div>
       <div style={{ fontSize:9, color:'var(--t3)', letterSpacing:'.1em', marginTop:1, fontWeight:600 }}>
-        3D ANATOMIYA · AI
+        IMO-ISHORA TILI · AI
       </div>
     </div>
   </div>
@@ -36,7 +39,7 @@ const Logo = ({ onClick }) => (
 /* ── NAV ──────────────────────────────────────────────────── */
 const NAV_ITEMS = [
   { id:'landing',   label:'Bosh Sahifa' },
-  { id:'education', label:"Ta'lim"      },
+  { id:'education', label:"Darslik"     },
   { id:'about',     label:'Haqimizda'   },
   { id:'contact',   label:"Bog'lanish"  },
 ];
@@ -61,6 +64,11 @@ export default function App() {
   const handleLogout = () => { logout(); setUser(null); setPage('landing'); };
   const nav = (p) => { setPage(p); window.scrollTo({ top:0, behavior:'smooth' }); };
 
+  // SignHand asosiy ilovasiga o'tish
+  const openApp = (mode) => {
+    window.open(SIGNHAND_APP_URL, '_blank');
+  };
+
   return (
     <div data-theme={dark ? 'dark' : 'light'}
       style={{ minHeight:'100vh', position:'relative', transition:'background .35s' }}>
@@ -83,7 +91,7 @@ export default function App() {
               interactive={false}
               parallax={false}
               animationSpeed={0.9}
-              linesGradient={['#06b6d4','#6366f1','#38bdf8','#8b5cf6','#0ea5e9','#06b6d4']}
+              linesGradient={['#0ea5e9','#0c4a6e','#38bdf8','#1e40af','#0891b2','#0ea5e9']}
               mixBlendMode="screen"
             />
           </div>
@@ -107,18 +115,16 @@ export default function App() {
             <button className="tgl" onClick={() => setDark(d => !d)}>
               <div className="tgl-k">{dark ? '🌙' : '☀️'}</div>
             </button>
-            {page !== 'education' && (
-              <button className="btn btn-p" style={{ fontSize:13, padding:'9px 22px' }}
-                onClick={() => nav('education')}>
-                <span>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
-                      stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  O'rganish
-                </span>
-              </button>
-            )}
+            <button className="btn btn-p" style={{ fontSize:13, padding:'9px 22px' }}
+              onClick={() => openApp('app')}>
+              <span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+                    stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                Ilovani ochish
+              </span>
+            </button>
             <div style={{ display:'flex', alignItems:'center', gap:8 }}>
               <div style={{
                 display:'flex', alignItems:'center', gap:7,
@@ -127,7 +133,7 @@ export default function App() {
               }}>
                 <div style={{
                   width:22, height:22, borderRadius:6,
-                  background:'linear-gradient(135deg,#06b6d4,#6366f1)',
+                  background:'linear-gradient(135deg,#0ea5e9,#0c4a6e)',
                   display:'flex', alignItems:'center', justifyContent:'center',
                   fontSize:10, fontWeight:800, color:'#fff',
                 }}>
@@ -160,16 +166,16 @@ export default function App() {
 
       {/* ── PAGES ── */}
       <div style={{ position:'relative', zIndex:1 }}>
-        {page === 'landing'   && <LandingPage   navigateTo={nav} dark={dark}/>}
-        {page === 'education' && <EducationPage  navigateTo={nav} dark={dark}/>}
-        {page === 'about'     && <AboutPage      navigateTo={nav} dark={dark}/>}
-        {page === 'contact'   && <ContactPage    navigateTo={nav} dark={dark}/>}
+        {page === 'landing'   && <LandingPage   navigateTo={nav} dark={dark} openApp={openApp}/>}
+        {page === 'education' && <EducationPage navigateTo={nav} dark={dark} openApp={openApp}/>}
+        {page === 'about'     && <AboutPage     navigateTo={nav} dark={dark}/>}
+        {page === 'contact'   && <ContactPage   navigateTo={nav} dark={dark}/>}
       </div>
 
       {/* ── FOOTER ── */}
       <footer style={{
         position:'relative', zIndex:1,
-        borderTop:`1px solid ${dark?'rgba(6,182,212,.15)':'#e2e8f0'}`,
+        borderTop:`1px solid ${dark?'rgba(14,165,233,.15)':'#e2e8f0'}`,
         background: dark?'rgba(2,11,26,.85)':'#ffffff',
         backdropFilter: dark?'blur(14px)':'none',
         padding:'28px 28px',
@@ -177,9 +183,9 @@ export default function App() {
         <div className="container">
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
             <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-              <div style={{ width:24, height:24, borderRadius:7, background:'linear-gradient(135deg,#06b6d4,#6366f1)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:13, fontWeight:800 }}>H</div>
-              <span style={{ fontSize:13, fontWeight:600, color:dark?'#e2e8f0':'#374151' }}>AIcenna</span>
-              <span style={{ fontSize:12, color:dark?'rgba(148,163,184,.7)':'#94a3b8' }}>· 3D Anatomiya Ta'lim Platformasi · 2026</span>
+              <div style={{ width:24, height:24, borderRadius:7, background:'linear-gradient(135deg,#0ea5e9,#0c4a6e)', display:'flex', alignItems:'center', justifyContent:'center', color:'#fff', fontSize:11, fontWeight:800 }}>SH</div>
+              <span style={{ fontSize:13, fontWeight:600, color:dark?'#e2e8f0':'#374151' }}>SignHand</span>
+              <span style={{ fontSize:12, color:dark?'rgba(148,163,184,.7)':'#94a3b8' }}>· O'zbek Imo-Ishora Tili AI · 2026</span>
             </div>
             <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
               {NAV_ITEMS.slice(1).map(n => (
@@ -188,18 +194,18 @@ export default function App() {
                   fontSize:12, color:dark?'rgba(148,163,184,.7)':'#94a3b8',
                   fontFamily:'var(--font)', transition:'color .2s',
                 }}
-                  onMouseOver={e => e.target.style.color = dark?'#06b6d4':'#4f46e5'}
+                  onMouseOver={e => e.target.style.color = dark?'#0ea5e9':'#0c4a6e'}
                   onMouseOut={e => e.target.style.color = dark?'rgba(148,163,184,.7)':'#94a3b8'}>
                   {n.label}
                 </button>
               ))}
             </div>
             <div style={{ display:'flex', gap:6 }}>
-              {["Ko'z","Miya","Yuqori Tana","Hand Tracking"].map(t => (
+              {["Darslik","Tarjimon","Mashq","MediaPipe AI"].map(t => (
                 <span key={t} style={{
                   padding:'3px 10px', borderRadius:20, fontSize:10, fontWeight:600,
-                  background: dark?'rgba(6,182,212,.1)':'rgba(79,70,229,.08)',
-                  border:`1px solid ${dark?'rgba(6,182,212,.2)':'rgba(79,70,229,.2)'}`,
+                  background: dark?'rgba(14,165,233,.1)':'rgba(12,74,110,.08)',
+                  border:`1px solid ${dark?'rgba(14,165,233,.2)':'rgba(12,74,110,.2)'}`,
                   color: dark?'rgba(186,230,255,.7)':'#6b7280',
                 }}>{t}</span>
               ))}

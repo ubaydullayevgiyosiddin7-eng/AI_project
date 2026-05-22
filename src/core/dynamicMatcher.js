@@ -19,9 +19,9 @@ export class TrajectoryBuffer {
   recent(n) { return this.points.slice(-n); }
 }
 
-// ─── Motion type — umumiy harakat turi ───
+// ─── Motion type — umumiy harakat turi (yumshoq threshold) ───
 export function classifyMotion(points) {
-  if (points.length < 10) return 'none';
+  if (points.length < 6) return 'none';   // 10 → 6
 
   const xs = points.map(p => p.x);
   const ys = points.map(p => p.y);
@@ -31,37 +31,37 @@ export function classifyMotion(points) {
   const bboxH = yMax - yMin;
 
   // Juda kichik harakat
-  if (bboxW < 0.04 && bboxH < 0.04) return 'none';
+  if (bboxW < 0.02 && bboxH < 0.02) return 'none';   // 0.04 → 0.02
 
   // ── Boshlanish va tugash yaqinmi? (doira) ──
   const startEnd = dist2D(points[0], points[points.length - 1]);
   const pathLen = pathLength(points);
 
-  if (startEnd < 0.06 && pathLen > 0.25 && bboxW > 0.06 && bboxH > 0.06) {
+  // Doira: kengroq threshold
+  if (startEnd < 0.08 && pathLen > 0.15 && bboxW > 0.03 && bboxH > 0.03) {
     return 'circle';
   }
 
-  // ── Yo'nalish o'zgarishlari soni ──
   const directionChanges = countDirectionChanges(points);
 
-  // ── Zigzag — 2+ marta yo'nalish o'zgarishi + keng ──
-  if (directionChanges >= 2 && bboxW > 0.10) {
+  // Zigzag — kengroq
+  if (directionChanges >= 2 && bboxW > 0.06) {     // 0.10 → 0.06
     return 'zigzag';
   }
 
-  // ── Shake — chap-o'ng tebranish (asosan x bo'yicha) ──
-  if (bboxW > 2 * bboxH && directionChanges >= 1 && bboxW > 0.08) {
+  // Shake — yumshoqroq
+  if (bboxW > 1.5 * bboxH && directionChanges >= 1 && bboxW > 0.05) {  // 0.08 → 0.05
     return 'shake';
   }
 
-  // ── J-curve — pastga + chapga ilmoq ──
+  // J-curve
   if (isJCurve(points)) {
     return 'j-curve';
   }
 
-  // ── Slide — bitta yo'nalish, masofa katta ──
-  if (bboxW > 0.10 && bboxH < 0.06) return 'slide';
-  if (bboxH > 0.10 && bboxW < 0.06) return 'slide';
+  // Slide — bitta yo'nalish
+  if (bboxW > 0.06 && bboxH < 0.04) return 'slide';
+  if (bboxH > 0.06 && bboxW < 0.04) return 'slide';
 
   return 'none';
 }
@@ -126,7 +126,7 @@ function holdMatches(actualHold, expectedHold) {
 // ─── Bitta harakatli imora uchun ball ───
 export function scoreDynamicSign(sign, buffer) {
   if (!sign.dynamic) return 0;
-  if (buffer.length() < 8) return 0;
+  if (buffer.length() < 6) return 0;   // 8 → 6
 
   const points = buffer.points;
   const motion = classifyMotion(points);

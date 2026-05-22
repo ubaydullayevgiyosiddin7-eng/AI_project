@@ -34,14 +34,40 @@ export default function SignCameraFeed({
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    const W = canvas.width, H = canvas.height;
+
+    // CSS pixel o'lchamlari (ctx allaqachon DPR ga moslashtirilgan)
+    const W = canvas.offsetWidth;
+    const H = canvas.offsetHeight;
     ctx.clearRect(0, 0, W, H);
 
     if (!results) return;
 
-    // Mirror: kamera ko'rinishi flipped, biz x ni teskari ko'rsatamiz
-    const mx = x => (1 - x) * W;
-    const my = y => y * H;
+    // ── Object-fit: cover hisoblanishi ──
+    // Video (640x480) container ichida qanday joylashganini hisoblaymiz
+    const video = videoRef.current;
+    const vW = video?.videoWidth  || 640;
+    const vH = video?.videoHeight || 480;
+    const vAspect = vW / vH;
+    const cAspect = W / H;
+
+    let dispW, dispH, offX, offY;
+    if (cAspect > vAspect) {
+      // Container kengroq → kenglik bo'yicha to'ldiriladi (yuqori/past kesiladi)
+      dispW = W;
+      dispH = W / vAspect;
+      offX = 0;
+      offY = (H - dispH) / 2;
+    } else {
+      // Container balandroq → balandlik bo'yicha to'ldiriladi (yon kesiladi)
+      dispH = H;
+      dispW = H * vAspect;
+      offY = 0;
+      offX = (W - dispW) / 2;
+    }
+
+    // Mirror — video scaleX(-1) bilan teskari ko'rsatiladi
+    const mx = x => (1 - x) * dispW + offX;
+    const my = y =>      y  * dispH + offY;
 
     const mistakes = detection?.mistakes || [];
     const wrongFingers = new Set(mistakes.map(m => m.finger));
@@ -81,9 +107,9 @@ export default function SignCameraFeed({
         grammar === 'negation' ? theme.danger :
         theme.primaryLight;
 
-      // 2a. TO'LIQ FACE MESH — 468 nuqta, kichik nuqtalar bilan
-      const dotR = size === 'large' ? 0.8 : 0.5;
-      ctx.fillStyle = 'rgba(14, 165, 233, 0.45)';  // primaryLight transparent
+      // 2a. TO'LIQ FACE MESH — 468 nuqta, yorqin nuqtalar
+      const dotR = size === 'large' ? 1.6 : 1.1;
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.85)';  // primaryLight, yorqin
       for (let i = 0; i < flm.length; i++) {
         const p = flm[i];
         if (!p) continue;
@@ -137,14 +163,27 @@ export default function SignCameraFeed({
     if (!canvas) return;
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = canvas.offsetWidth * dpr;
-      canvas.height = canvas.offsetHeight * dpr;
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      if (w <= 0 || h <= 0) return;
+      // DPR ga moslashtirilgan o'lcham
+      canvas.width  = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
       const ctx = canvas.getContext('2d');
-      ctx.scale(dpr, dpr);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);  // reset oldingi transform
+      ctx.scale(dpr, dpr);                   // CSS pixel'da chizish
     };
     resize();
+    // Container o'lchami o'zgarsa kuzatamiz
+    const ro = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(resize)
+      : null;
+    if (ro) ro.observe(canvas);
     window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    return () => {
+      if (ro) ro.disconnect();
+      window.removeEventListener('resize', resize);
+    };
   }, []);
 
   const isLarge = size === 'large';

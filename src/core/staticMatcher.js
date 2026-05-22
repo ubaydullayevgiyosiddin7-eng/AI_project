@@ -17,36 +17,49 @@ function signatureMatch(actual, target) {
   for (let i = 0; i < 5; i++) {
     if (target[i] === '*') { score++; continue; }
     if (actual[i] === target[i]) { score++; continue; }
-    // 1 va 2 — qisman (hooked vs extended)
+    // 1 va 2 — ikkalasi ham "ochiq" — yuqori kredit
     if ((actual[i] === 2 && target[i] === 1) ||
-        (actual[i] === 1 && target[i] === 2)) { score += 0.5; }
+        (actual[i] === 1 && target[i] === 2)) { score += 0.85; }
+    // 0 va 2 — biroz mos (yopiq vs yarim-egilgan)
+    else if ((actual[i] === 0 && target[i] === 2) ||
+             (actual[i] === 2 && target[i] === 0)) { score += 0.4; }
   }
   return score / 5;
 }
 
-// Asosiy decision tree
+// Asosiy decision tree — hujjatga va foydalanuvchi sinovlariga moslangan
 function decisionTree(hand) {
   if (!hand) return null;
   const sig    = hand.signature;
   const orient = hand.orientation;
   const c      = hand.contacts;
 
-  // Helper: imzo mos kelishi
-  const sig_eq = (target) => signatureMatch(sig, target) >= 0.8;
+  // Helper: imzo mos kelishi (0.7 — yumshoq tolerantlik)
+  const sig_eq = (target) => signatureMatch(sig, target) >= 0.7;
 
   // ═══ [0,0,0,0,0] — yopiq musht ═══
   if (sig_eq([0,0,0,0,0])) {
-    // A — bosh barmoq yon tomonda
-    // S — bosh barmoq barmoqlar ustida
     if (c.thumb_above_index_mcp) {
-      return { id: 'S', confidence: 0.88 };
+      return { id: 'S', confidence: 0.92 };
     }
-    return { id: 'A', confidence: 0.90 };
+    return { id: 'A', confidence: 0.92 };
+  }
+
+  // ═══ [0,2,2,2,2] yoki yumshoq variant — E (barmoqlar yarim egilgan) ═══
+  if (sig_eq([0,2,2,2,2])) {
+    return { id: 'E', confidence: 0.92 };
+  }
+  // Yumshoq E: kamida 2 ta hook + qolgani yopiq yoki hook
+  const hookCount = (sig[1] === 2 ? 1 : 0) + (sig[2] === 2 ? 1 : 0) +
+                    (sig[3] === 2 ? 1 : 0) + (sig[4] === 2 ? 1 : 0);
+  if (sig[0] === 0 && hookCount >= 3) {
+    // 3+ barmoq yarim egilgan + thumb yopiq = E
+    return { id: 'E', confidence: 0.88 };
   }
 
   // ═══ [1,0,0,0,0] — faqat bosh barmoq ═══
   if (sig_eq([1,0,0,0,0])) {
-    return { id: 'A', confidence: 0.92 };
+    return { id: 'A', confidence: 0.94 };
   }
 
   // ═══ [0,0,0,0,1] — faqat chinchaloq ═══
@@ -56,109 +69,141 @@ function decisionTree(hand) {
 
   // ═══ [1,0,0,0,1] — bosh + chinchaloq (shaka) ═══
   if (sig_eq([1,0,0,0,1])) {
-    // U — statik
-    // O' — harakat bilan (dynamic matcher hal qiladi)
-    return { id: 'U', confidence: 0.92 };
+    return { id: 'U', confidence: 0.94 };
   }
 
-  // ═══ [0,1,1,0,0] — index + middle ═══
+  // ═══ [0,1,1,0,1] — N harfi (foydalanuvchi tavsifi) ═══
+  // 3 barmoq ochiq (index, middle, pinky) + thumb-ring tegishi
+  if (sig_eq([0,1,1,0,1])) {
+    if (c.thumb_ring_touch) {
+      return { id: 'N', confidence: 0.93 };
+    }
+    return { id: 'Ng', confidence: 0.85 };
+  }
+
+  // ═══ [0,1,0,1,1] — R harfi (foydalanuvchi tavsifi) ═══
+  // 3 barmoq ochiq (index, ring, pinky) + thumb-middle tegishi
+  if (sig_eq([0,1,0,1,1])) {
+    if (c.thumb_middle_touch) {
+      return { id: 'R', confidence: 0.93 };
+    }
+    return { id: 'R', confidence: 0.82 };
+  }
+
+  // ═══ [0,1,1,0,0] — index + middle UP → B (foydalanuvchi tanlovi) ═══
+  // Foydalanuvchi B qilganda middle ham biroz ko'tarilishi mumkin
   if (sig_eq([0,1,1,0,0])) {
     if (orient === 'DOWN') {
-      return { id: 'P', confidence: 0.85 };
+      return { id: 'P', confidence: 0.92 };
     }
     if (c.index_middle_crossed) {
-      return { id: 'R', confidence: 0.90 };
+      return { id: 'R', confidence: 0.88 };
     }
-    if (c.index_middle_close) {
-      return { id: 'B', confidence: 0.88 };
-    }
-    return { id: 'N', confidence: 0.78 };
+    // UP: B (avval Q edi, hozir B priority)
+    return { id: 'B', confidence: 0.92 };
   }
 
   // ═══ [1,1,0,0,0] — bosh + ko'rsatkich ═══
   if (sig_eq([1,1,0,0,0])) {
-    // O — uchlari tegadi (doira)
-    // Q — pastga qaragan
-    // G — yon tomonga
-    // L — agar barmoq orasida burchak katta bo'lsa
     if (c.thumb_index_touch) {
-      return { id: 'O', confidence: 0.92 };
-    }
-    if (orient === 'DOWN') {
-      return { id: 'Q', confidence: 0.82 };
+      // Foydalanuvchi tanlovi: pinch shape = S
+      return { id: 'S', confidence: 0.92 };
     }
     if (orient === 'SIDE') {
-      return { id: 'G', confidence: 0.85 };
+      return { id: 'G', confidence: 0.90 };
     }
-    // UP — L (agar burchak yetarli)
-    if (hand.thumbIndexAngle >= 50 && hand.thumbIndexAngle <= 130) {
+    if (orient === 'DOWN') {
+      return { id: 'P', confidence: 0.85 };
+    }
+    // UP: L (faqat aniq 90° atrofidagi L shakli) yoki B (oddiy index UP)
+    if (hand.thumbIndexAngle >= 75 && hand.thumbIndexAngle <= 110) {
       return { id: 'L', confidence: 0.90 };
     }
-    return { id: 'L', confidence: 0.75 };
+    // Tabiiy holatda thumb ozgina chiqib turadi — bu B
+    return { id: 'B', confidence: 0.91 };
   }
 
   // ═══ [1,1,1,1,1] — hammasi cho'zilgan ═══
   if (sig_eq([1,1,1,1,1])) {
-    // L — kerilgan (barmoq orasi katta)
-    // V — barmoqlar yopishgan
-    // Sh — kaft kameraga to'g'ri vertikal
     if (c.fingers_spread) {
-      return { id: 'L', confidence: 0.90 };
+      return { id: 'L', confidence: 0.94 };
     }
-    if (orient === 'FORWARD') {
-      return { id: 'Sh', confidence: 0.82 };
-    }
-    return { id: 'V', confidence: 0.80 };
+    return { id: 'V', confidence: 0.92 };
   }
 
-  // ═══ [0,1,1,1,1] — 4 barmoq (thumb yopiq) ═══
+  // ═══ Generic: thumb=0, pinky=0, 3 o'rta barmoq ochiq (1 yoki 2) ═══
+  // T (DOWN) yoki Sh (UP) — orientation bilan ajratiladi
+  const sig3middle = sig[0] === 0 && sig[4] === 0 &&
+                     sig[1] >= 1 && sig[2] >= 1 && sig[3] >= 1;
+  if (sig3middle) {
+    if (orient === 'DOWN') {
+      return { id: 'T', confidence: 0.93 };
+    }
+    // UP yoki SIDE — Sh
+    // Lekin agar uchchala barmoq aniq hook bo'lsa, Ch ham bo'lishi mumkin
+    const allHooked = sig[1] === 2 && sig[2] === 2 && sig[3] === 2;
+    if (allHooked && orient !== 'DOWN') {
+      return { id: 'Ch', confidence: 0.90 };
+    }
+    return { id: 'Sh', confidence: 0.93 };
+  }
+
+  // ═══ [0,1,1,1,1] — 4 barmoq tik (thumb yopiq) ═══
   if (sig_eq([0,1,1,1,1])) {
-    // Sh — vertikal, 4 barmoq tik
-    // X — gorizontal (yon)
-    // M — yopishgan
     if (orient === 'SIDE') {
-      return { id: 'X', confidence: 0.82 };
+      return { id: 'X', confidence: 0.90 };
+    }
+    if (orient === 'DOWN') {
+      return { id: 'D', confidence: 0.90 };
     }
     if (c.fingers_close) {
-      return { id: 'M', confidence: 0.80 };
+      return { id: 'M', confidence: 0.92 };
     }
-    return { id: 'Sh', confidence: 0.85 };
-  }
-
-  // ═══ [0,2,2,2,2] — hammasi yarim-egilgan (E) ═══
-  if (sig_eq([0,2,2,2,2])) {
-    return { id: 'E', confidence: 0.85 };
+    return { id: 'M', confidence: 0.88 };
   }
 
   // ═══ [0,2,2,0,0] — index+middle hook (F) ═══
   if (sig_eq([0,2,2,0,0])) {
-    return { id: 'F', confidence: 0.82 };
+    return { id: 'F', confidence: 0.90 };
   }
 
   // ═══ [0,2,2,2,0] — 3 barmoq hook (Ch) ═══
   if (sig_eq([0,2,2,2,0])) {
-    return { id: 'Ch', confidence: 0.82 };
+    return { id: 'Ch', confidence: 0.90 };
   }
 
-  // ═══ [0,2,0,0,0] — faqat index hook (Y) ═══
+  // ═══ [0,2,0,0,0] — faqat index hook (X / Y) ═══
   if (sig_eq([0,2,0,0,0])) {
-    return { id: 'Y', confidence: 0.82 };
+    // X — ilmoq (ko'rsatkich yarim-egilgan)
+    // Y — image dan ko'rinishidan farqli
+    return { id: 'X', confidence: 0.90 };
   }
 
-  // ═══ [0,1,0,0,0] — faqat ko'rsatkich (G/K/T/Z) ═══
+  // ═══ [0,1,0,0,0] — faqat ko'rsatkich (B statik yoki G/K/Z dynamic) ═══
   if (sig_eq([0,1,0,0,0])) {
-    // Harakatga qarab ajratiladi (dynamic matcher)
-    // Statik bo'lsa — G (agar SIDE), aks holda noaniq
     if (orient === 'SIDE') {
-      return { id: 'G', confidence: 0.78 };
+      return { id: 'G', confidence: 0.90 };
     }
-    // UP holatda — G yoki harakatli (K, T, Z) — dynamic matcher hal qiladi
-    return { id: 'B', confidence: 0.55 };  // B ga yumshoq taxmin
+    // UP — B statik (yoki K/Z harakatli — dynamic matcher hal qiladi)
+    return { id: 'B', confidence: 0.90 };
   }
 
-  // ═══ [0,1,0,0,1] — index + chinchaloq (Ng) ═══
+  // ═══ [0,1,0,0,1] — index + chinchaloq (Ng statik) ═══
   if (sig_eq([0,1,0,0,1])) {
-    return { id: 'Ng', confidence: 0.78 };
+    return { id: 'Ng', confidence: 0.85 };
+  }
+
+  // ═══ FALLBACK B — index UP dominant, juda yumshoq qabul ═══
+  // Foydalanuvchi B qilganda boshqa barmoqlar tabiiy ravishda biroz chiqib qolishi mumkin
+  if (orient === 'UP' && sig[1] === 1) {
+    // Index aniq tik
+    // Q (index+middle) yoki I (faqat pinky) bilan adashmaslik uchun:
+    //   - middle ochiq emas → B
+    //   - middle ochiq + ring/pinky yopiq → Q (allaqachon yuqorida)
+    if (sig[2] !== 1 && sig[3] !== 1) {
+      // index + (pinky bo'lishi mumkin) — pinky noise qabul
+      return { id: 'B', confidence: 0.88 };
+    }
   }
 
   return null;
@@ -283,26 +328,29 @@ function bestScoreAcrossHands(letter, features) {
 // EKSPORT: matchStaticLetter — birlashtirilgan
 // ───────────────────────────────────────────────
 
-export function matchStaticLetter(features, threshold = 0.5) {
+export function matchStaticLetter(features, threshold = 0.5, allowedLetters = null) {
   if (!features?.dominant && !features?.secondary) return null;
+
+  const isAllowed = (id) => !allowedLetters || allowedLetters.has(id);
 
   // 1) Decision tree
   const dt = bestDecisionAcrossHands(features);
 
-  // 2) Soft scoring (zaxira yoki katta ball uchun)
+  // 2) Soft scoring — faqat ruxsat etilgan harflarni hisoblaymiz
   let softBest = null;
   let softScore = 0;
   const allScores = {};
 
   for (const letter of ALPHABET) {
     if (letter.type !== 'static') continue;
+    if (!isAllowed(letter.id)) continue;     // filter
     const score = bestScoreAcrossHands(letter, features);
     allScores[letter.id] = score;
     if (score > softScore) { softScore = score; softBest = letter; }
   }
 
-  // Decision tree natijasi yetarli ishonchli bo'lsa — uni qabul qilamiz
-  if (dt && dt.confidence >= threshold) {
+  // Decision tree natijasi qabul qilinadi faqat ruxsat etilgan bo'lsa
+  if (dt && dt.confidence >= threshold && isAllowed(dt.id)) {
     return {
       letter: dt.id,
       label: ALPHABET.find(l => l.id === dt.id)?.uzbekLabel || dt.id,
@@ -312,7 +360,7 @@ export function matchStaticLetter(features, threshold = 0.5) {
     };
   }
 
-  // Aks holda soft scoring natijasi
+  // Aks holda soft scoring natijasi (faqat ruxsat etilgan harflar orasidan)
   if (softBest && softScore >= threshold) {
     return {
       letter: softBest.id,
@@ -362,8 +410,51 @@ export function scoreSpecificLetter(letterId, features) {
     if (s > bestScore) { bestScore = s; bestHand = features.secondary; }
   }
 
-  // Decision tree boshqa harfni topgan bo'lsa, biroz pasaytirib soft ball
-  if (dt && dt.id !== letterId && dt.confidence > 0.7) {
+  // Maxsus: B target — index aniq UP bo'lsa, balni ko'taramiz
+  if (letterId === 'B' && bestScore < 0.85) {
+    const indexUpAndSimple = (hand) => {
+      if (!hand) return false;
+      return hand.fingerState?.index === 1 &&
+             hand.fingerState?.ring !== 1 &&
+             hand.fingerState?.pinky !== 1 &&
+             hand.orientation === 'UP';
+    };
+    if (indexUpAndSimple(features.dominant) || indexUpAndSimple(features.secondary)) {
+      bestScore = Math.max(bestScore, 0.88);
+    }
+  }
+
+  // Maxsus: S target — thumb+index pinch (foydalanuvchi tanlovi)
+  if (letterId === 'S' && bestScore < 0.85) {
+    const pinchShape = (hand) => {
+      if (!hand) return false;
+      return hand.contacts?.thumb_index_touch &&
+             hand.fingerState?.middle !== 1 &&
+             hand.fingerState?.ring  !== 1 &&
+             hand.fingerState?.pinky !== 1;
+    };
+    if (pinchShape(features.dominant) || pinchShape(features.secondary)) {
+      bestScore = Math.max(bestScore, 0.92);
+    }
+  }
+
+  // Maxsus: Ch target — eski qoidasi (3 hooked) bilan ham qabul qilinsin
+  if (letterId === 'Ch' && bestScore < 0.85) {
+    const pinchShape = (hand) => {
+      if (!hand) return false;
+      return hand.contacts?.thumb_index_touch &&
+             hand.fingerState?.middle !== 1 &&
+             hand.fingerState?.ring  !== 1 &&
+             hand.fingerState?.pinky !== 1;
+    };
+    if (pinchShape(features.dominant) || pinchShape(features.secondary)) {
+      bestScore = Math.max(bestScore, 0.85);
+    }
+  }
+
+  // Adashtirish riski past harflar — DT boshqa harfni topsa ham cap qo'ymaymiz
+  const sharedGestures = new Set(['B', 'Ch', 'S']);
+  if (dt && dt.id !== letterId && dt.confidence > 0.7 && !sharedGestures.has(letterId)) {
     bestScore = Math.min(bestScore, 0.4);
   }
 

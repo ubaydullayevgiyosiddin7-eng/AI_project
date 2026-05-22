@@ -10,6 +10,12 @@ import theme from '../theme';
 
 const GUIDE_KEY = 'signhand_translator_guide_seen';
 
+// Demo cheklovi: faqat "BU SUV" gapi uchun kerakli harflar
+const ALLOWED_DEMO_LETTERS = new Set(['B', 'U', 'S', 'V']);
+
+// Qo'l ko'rinmaganda so'z yakunlanishi uchun vaqt (3 sek)
+const WORD_PAUSE_MS = 3000;
+
 export default function TranslatorPage({ onBack }) {
   const videoRef = useRef(null);
   const builderRef = useRef(new SentenceBuilder());
@@ -22,12 +28,14 @@ export default function TranslatorPage({ onBack }) {
   });
 
   const holistic = useHolistic(videoRef, true);
-  // 4 sek qimirlatmay ushlash + 80% threshold — adashish kamayadi
+  // Demo uchun cheklangan — faqat "BU SUV" gapi uchun kerakli harflar
+  // Qoshlar yuqori → "?", pastga → "EMAS"
   const detection = useSignDetector(holistic.results, {
     mode: 'translator',
-    threshold: 0.80,
-    holdMs: 4000,
-    cooldownMs: 1500,
+    threshold: 0.55,
+    holdMs: 2000,
+    cooldownMs: 1200,
+    allowedLetters: ALLOWED_DEMO_LETTERS,
   });
 
   useEffect(() => {
@@ -44,6 +52,44 @@ export default function TranslatorPage({ onBack }) {
   useEffect(() => {
     if (detection.grammar !== lastGrammar) setLastGrammar(detection.grammar);
   }, [detection.grammar, lastGrammar]);
+
+  // ── Qo'l ko'rinmagan vaqtni kuzatish (so'z chegarasi) ──
+  const handsCountRef = useRef(0);
+  const lastHandSeenRef = useRef(Date.now());
+  const [pauseProgress, setPauseProgress] = useState(0);
+
+  // handsCount ni ref ga sync qilamiz (stale closure'dan qochish uchun)
+  useEffect(() => {
+    handsCountRef.current = holistic.handsCount;
+    if (holistic.handsCount > 0) {
+      lastHandSeenRef.current = Date.now();
+    }
+  }, [holistic.handsCount]);
+
+  // Bitta interval (mount'da bir marta yaratiladi)
+  useEffect(() => {
+    const id = setInterval(() => {
+      // Qo'l ko'rinyaptimi?
+      if (handsCountRef.current > 0) {
+        setPauseProgress(p => (p > 0 ? 0 : p));
+        return;
+      }
+      // Qo'l yo'q — lekin so'z hozircha bo'sh bo'lsa ham progress bilinsin
+      const hasWord = builderRef.current.currentWord.length > 0;
+      const elapsed = Date.now() - lastHandSeenRef.current;
+      const progress = Math.min(1, elapsed / WORD_PAUSE_MS);
+      setPauseProgress(progress);
+
+      // 3 sek o'tdi va so'z bor bo'lsa — yakunlash
+      if (elapsed >= WORD_PAUSE_MS && hasWord) {
+        builderRef.current.flushWord();
+        lastHandSeenRef.current = Date.now();
+        setPauseProgress(0);
+        forceUpdate(x => x + 1);
+      }
+    }, 100);
+    return () => clearInterval(id);
+  }, []);  // bo'sh dependencies — mount'da bir marta
 
   const handleClose = () => {
     setShowGuide(false);
@@ -110,6 +156,30 @@ export default function TranslatorPage({ onBack }) {
               light
             />
           </div>
+
+          {/* Pauza countdown — qo'l ko'rinmagan paytda */}
+          {pauseProgress > 0.05 && (
+            <div style={pauseBoxStyle}>
+              <div style={{ fontSize: 11, color: theme.warning, fontWeight: 700, letterSpacing: '0.06em', marginBottom: 6 }}>
+                {builderRef.current.currentWord.length > 0
+                  ? `BO'SH JOY ${Math.max(0, Math.ceil((WORD_PAUSE_MS - pauseProgress * WORD_PAUSE_MS) / 1000))} SEK...`
+                  : `Qo'l ko'rinmayapti`}
+              </div>
+              <div style={{ height: 6, background: theme.bg, borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%',
+                  width: `${pauseProgress * 100}%`,
+                  background: theme.warning,
+                  transition: 'width 0.1s',
+                }} />
+              </div>
+              {builderRef.current.currentWord.length > 0 && (
+                <div style={{ fontSize: 10, color: theme.textMuted, marginTop: 4 }}>
+                  3 sek qo'l ko'rinmasa — so'z yakunlanadi
+                </div>
+              )}
+            </div>
+          )}
         </section>
 
         {/* O'NG: tarjima paneli */}
@@ -121,12 +191,28 @@ export default function TranslatorPage({ onBack }) {
             <GrammarBadge grammar={lastGrammar} />
           </div>
 
-          {/* Yig'ilgan matn — katta */}
+          {/* Yig'ilgan matn — token-asoslangan (so'z chegaralari ko'rinadi) */}
           <div style={textAreaStyle}>
-            {text ? (
-              <div style={{ fontSize: 28, color: theme.primaryDark, fontWeight: 700, lineHeight: 1.4, letterSpacing: '0.02em' }}>
-                {text}
-                <span style={cursorStyle}>|</span>
+            {(builderRef.current.tokens.length > 0 || builderRef.current.currentWord.length > 0) ? (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', justifyContent: 'center' }}>
+                {builderRef.current.tokens.map((t, i) => (
+                  <span key={i} style={{
+                    fontSize: 28, fontWeight: 700, color: theme.primaryDark,
+                    background: '#dbeafe', padding: '4px 14px', borderRadius: 8,
+                  }}>
+                    {t.value}
+                  </span>
+                ))}
+                {builderRef.current.currentWord && (
+                  <span style={{
+                    fontSize: 28, fontWeight: 700, color: theme.primary,
+                    background: '#fef3c7', padding: '4px 14px', borderRadius: 8,
+                    border: `2px dashed ${theme.warning}`,
+                  }}>
+                    {builderRef.current.currentWord}
+                    <span style={cursorStyle}>|</span>
+                  </span>
+                )}
               </div>
             ) : (
               <div style={{ fontSize: 14, color: theme.textLight }}>
@@ -150,8 +236,9 @@ export default function TranslatorPage({ onBack }) {
 
           {/* Qisqa eslatma */}
           <div style={hintStyle}>
-            <strong style={{ color: theme.primary }}>Maslahat:</strong> Imorani <strong>4 sekund qimirlatmay</strong> ushlang — tasdiqlanadi.
-            Pauza — bo'sh joy. Qoshlar yuqori — savol belgisi.
+            <strong style={{ color: theme.primary }}>Demo rejimi:</strong> Faqat <strong>B, U, S, V</strong> harflari aniqlanadi (gap: "BU SUV").
+            <br />
+            Qoshlar yuqori → <strong>"?"</strong>, qoshlar pastga → <strong>"EMAS"</strong>.
           </div>
         </section>
       </main>
@@ -335,4 +422,12 @@ const hintStyle = {
   padding: 10,
   borderRadius: theme.radiusSm,
   lineHeight: 1.5,
+};
+
+const pauseBoxStyle = {
+  marginTop: 10,
+  background: '#fef3c7',
+  border: `1px solid #fde68a`,
+  borderRadius: theme.radius,
+  padding: '10px 12px',
 };

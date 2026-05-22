@@ -22,6 +22,7 @@ export default function useSignDetector(holisticResults, opts = {}) {
     threshold = 0.62,
     holdMs = 700,
     cooldownMs = 1400,
+    allowedLetters = null,  // null = barcha, yoki Set(['B','U','S','V'])
   } = opts;
 
   const calibrationRef = useRef(loadCalibration());
@@ -76,16 +77,21 @@ export default function useSignDetector(holisticResults, opts = {}) {
       secondaryTrajRef.current.push({ x: tip.x, y: tip.y }, holdPose);
     }
 
-    // ── Statik harf — decision tree + soft scoring
-    const staticResult = matchStaticLetter(features, 0.5);
+    // ── Statik harf — decision tree + soft scoring + filter (allowedLetters)
+    const staticResult = matchStaticLetter(features, 0.5, allowedLetters);
 
-    // ── Harakatli imora — har 2 qo'lda sinab, yaxshisini olamiz
+    // ── Harakatli imora — filtrlangan ALPHABET orqali
     let dynamicResult = null;
     if (mode !== 'lesson_static_only') {
-      const dDom = matchDynamicSign(dominantTrajRef.current, ALPHABET, 0.55);
-      const dSec = features.secondary ? matchDynamicSign(secondaryTrajRef.current, ALPHABET, 0.55) : null;
-      if (dDom && dSec) dynamicResult = (dSec.confidence > dDom.confidence) ? dSec : dDom;
-      else dynamicResult = dDom || dSec;
+      const dynList = allowedLetters
+        ? ALPHABET.filter(l => allowedLetters.has(l.id))
+        : ALPHABET;
+      if (dynList.some(l => l.type === 'dynamic')) {
+        const dDom = matchDynamicSign(dominantTrajRef.current, dynList, 0.55);
+        const dSec = features.secondary ? matchDynamicSign(secondaryTrajRef.current, dynList, 0.55) : null;
+        if (dDom && dSec) dynamicResult = (dSec.confidence > dDom.confidence) ? dSec : dDom;
+        else dynamicResult = dDom || dSec;
+      }
     }
 
     // ── Eng yaxshi nomzodni tanlaymiz
@@ -103,7 +109,8 @@ export default function useSignDetector(holisticResults, opts = {}) {
       tempBufRef.current.push(null, 0);
     }
 
-    const consensus = tempBufRef.current.consensus(0.55, threshold);
+    // minRatio 0.45 — yumshoq ko'pchilik (15 freymdan 7 ta yetadi)
+    const consensus = tempBufRef.current.consensus(0.45, threshold);
 
     // ── Stabillik (hold-to-confirm)
     let stable = { progress: 0, value: null };
@@ -136,7 +143,30 @@ export default function useSignDetector(holisticResults, opts = {}) {
     let mistakes = [];
     if (mode === 'lesson' && targetSign) {
       const r = scoreSpecificLetter(targetSign, features);
-      targetScore = r.confidence;
+      const targetLetter = ALPHABET.find(l => l.id === targetSign);
+
+      // Harakatli harflar uchun: poz + harakat bonusi
+      if (targetLetter?.type === 'dynamic') {
+        let dynScore = 0;
+        // Har 2 qo'l bufer ham tekshiriladi — past threshold (0.2)
+        const dDom = matchDynamicSign(dominantTrajRef.current, [targetLetter], 0.2);
+        const dSec = features.secondary
+          ? matchDynamicSign(secondaryTrajRef.current, [targetLetter], 0.2)
+          : null;
+        if (dDom && dDom.id === targetSign) dynScore = Math.max(dynScore, dDom.confidence);
+        if (dSec && dSec.id === targetSign) dynScore = Math.max(dynScore, dSec.confidence);
+
+        // Pose 50% + harakat 50% — yarmi pozada, yarmi harakatda
+        // Foydalanuvchi harakat qilsa, sezilarli darajada ball ko'tariladi
+        const poseScore = r.confidence;
+        const motionBoost = dynScore;
+        // Aniq formula: poza + (1 - poza) * motion
+        // Agar pose = 0.5 va motion = 0.7 → 0.5 + 0.5 * 0.7 = 0.85
+        // Agar pose = 0.8 va motion = 0.5 → 0.8 + 0.2 * 0.5 = 0.90
+        targetScore = poseScore + (1 - poseScore) * motionBoost;
+      } else {
+        targetScore = r.confidence;
+      }
       mistakes = r.mistakes;
     }
 

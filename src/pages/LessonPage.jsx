@@ -264,6 +264,28 @@ export default function LessonPage({ lessonId, onBack }) {
             </div>
           </div>
 
+          {/* Harakatli harflar uchun yo'riqnoma */}
+          {currentLetter?.type === 'dynamic' && (
+            <div style={dynamicHintBoxStyle}>
+              <div style={{ fontSize: 10, color: theme.primary, fontWeight: 700, letterSpacing: '0.06em', marginBottom: 4 }}>
+                HARAKAT KERAK
+              </div>
+              <div style={{ fontSize: 12, color: theme.text, lineHeight: 1.5 }}>
+                {currentLetter.dynamic?.motion === 'circle' && "Ko'rsatkich barmoq bilan havoda DOIRA chizing"}
+                {currentLetter.dynamic?.motion === 'zigzag' && "Ko'rsatkich barmoq bilan Z shaklida zigzag chizing"}
+                {currentLetter.dynamic?.motion === 'shake' && "Qo'lingizni chap-o'ngga tebrating"}
+                {currentLetter.dynamic?.motion === 'slide' && "Qo'lingizni bir tomonga siljiting"}
+                {(currentLetter.dynamic?.motion === 'j-curve' ||
+                  (Array.isArray(currentLetter.dynamic?.motion) && currentLetter.dynamic.motion.includes('j-curve'))) &&
+                  "Pastga + chapga J shaklida ilmoq qiling"}
+                {Array.isArray(currentLetter.dynamic?.motion) &&
+                  currentLetter.dynamic.motion.includes('slide') &&
+                  !currentLetter.dynamic.motion.includes('j-curve') &&
+                  "Qo'lingizni yon tomonga siljiting"}
+              </div>
+            </div>
+          )}
+
           {/* Aniqlik */}
           <ConfidenceBar
             confidence={score}
@@ -405,6 +427,13 @@ const currentSignCardStyle = {
 const mistakeBoxStyle = {
   background: '#fef3c7',
   border: `1px solid #fde68a`,
+  borderRadius: theme.radius,
+  padding: '10px 14px',
+};
+
+const dynamicHintBoxStyle = {
+  background: '#eff6ff',
+  border: `1px solid #bfdbfe`,
   borderRadius: theme.radius,
   padding: '10px 14px',
 };
