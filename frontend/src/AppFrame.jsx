@@ -7,9 +7,12 @@ export default function AppFrame({ navigateTo, user }) {
   const [state, setState] = useState('checking'); // checking | ok | down
   const [nonce, setNonce] = useState(0);          // iframe'ni qayta yuklash uchun
 
-  // Ilovada qayta ro'yxatdan o'tish yo'q — ism shu yerdan uzatiladi
+  // Ilovada qayta ro'yxatdan o'tish yo'q — ism shu yerdan uzatiladi.
+  // APP_URL dev'da to'liq manzil, production'da '/app/' — ikkalasida ham
+  // qo'sh slash chiqmasligi uchun oxirgi belgi tekshiriladi.
   const name = user?.full_name || user?.username || '';
-  const src  = name ? `${APP_URL}/?user=${encodeURIComponent(name)}` : APP_URL;
+  const base = APP_URL.endsWith('/') ? APP_URL : `${APP_URL}/`;
+  const src  = name ? `${base}?user=${encodeURIComponent(name)}` : base;
 
   const probe = useCallback(async () => {
     setState('checking');

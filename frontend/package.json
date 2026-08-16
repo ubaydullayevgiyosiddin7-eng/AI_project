@@ -2,6 +2,9 @@
   "name": "surdo-ai-landing",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -9,8 +12,7 @@
     "three": "^0.169.0"
   },
   "scripts": {
-    "start": "concurrently -k -n SAYT,ILOVA -c green,cyan \"react-scripts start\" \"npm --prefix .. run dev\"",
-    "start:sayt": "react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build"
   },
   "browserslist": {
@@ -21,8 +23,5 @@
     "development": [
       "last 1 chrome version"
     ]
-  },
-  "devDependencies": {
-    "concurrently": "^10.0.5"
   }
 }

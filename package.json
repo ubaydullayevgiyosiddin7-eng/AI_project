@@ -4,10 +4,17 @@
   "version": "0.1.0",
   "description": "Surdo AI — O'zbek imo-ishora tili o'rgatish va real-time tarjimon platformasi",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "start": "npm --prefix frontend start",
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "concurrently -k -n SAYT,ILOVA -c green,cyan \"npm --prefix frontend run start\" \"vite\"",
+    "dev:ilova": "vite",
+    "dev:sayt": "npm --prefix frontend run start",
+    "build": "npm run build:ilova && npm run build:sayt",
+    "build:ilova": "vite build",
+    "build:sayt": "npm --prefix frontend install && npm --prefix frontend run build",
+    "start": "node server.js",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -19,10 +26,12 @@
     "@mediapipe/hands": "^0.4.1675469240",
     "@mediapipe/holistic": "^0.5.1675471629",
     "@mediapipe/camera_utils": "^0.3.1675466862",
-    "@mediapipe/drawing_utils": "^0.3.1675466124"
+    "@mediapipe/drawing_utils": "^0.3.1675466124",
+    "express": "^4.21.2",
+    "vite": "^5.4.10",
+    "@vitejs/plugin-react": "^4.3.2"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.2",
-    "vite": "^5.4.10"
+    "concurrently": "^10.0.5"
   }
 }
