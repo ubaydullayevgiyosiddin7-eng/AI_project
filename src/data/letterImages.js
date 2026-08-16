@@ -4,6 +4,12 @@
 //   a.png, b.png, d.png, ..., z.png
 //   o'.png, g'.png        ← apostrof bilan
 //   sh.png, ch.png, ng.png
+//
+// MUHIM: yo'l BASE_URL bilan yasaladi. Ilova development'da '/' da,
+// production'da esa saytning '/app/' yo'li ostida tarqatiladi.
+// Absolyut '/alifbo/...' yozilsa, production'da rasm topilmaydi.
+
+const BASE = import.meta.env.BASE_URL; // dev: '/', prod: '/app/'
 
 // Harf ID → fayl nomi
 const FILE_NAME = {
@@ -21,7 +27,7 @@ const FILE_NAME = {
 export function letterImagePath(letterId) {
   const name = FILE_NAME[letterId] || letterId.toLowerCase();
   // Apostrof URL'da xavfsiz, lekin encodeURIComponent ishlatib aniq qilamiz
-  return `/alifbo/${encodeURIComponent(name)}.png`;
+  return `${BASE}alifbo/${encodeURIComponent(name)}.png`;
 }
 
 // Bir necha kengaytmali fallback
@@ -29,11 +35,11 @@ export function letterImageCandidates(letterId) {
   const name = FILE_NAME[letterId] || letterId.toLowerCase();
   const enc = encodeURIComponent(name);
   return [
-    `/alifbo/${enc}.png`,
-    `/alifbo/${enc}.jpg`,
-    `/alifbo/${enc}.jpeg`,
-    `/alifbo/${enc}.webp`,
+    `${BASE}alifbo/${enc}.png`,
+    `${BASE}alifbo/${enc}.jpg`,
+    `${BASE}alifbo/${enc}.jpeg`,
+    `${BASE}alifbo/${enc}.webp`,
     // Eski public/images/alphabet/ joyini ham qo'llab-quvvatlaymiz
-    `/images/alphabet/${letterId}.png`,
+    `${BASE}images/alphabet/${letterId}.png`,
   ];
 }

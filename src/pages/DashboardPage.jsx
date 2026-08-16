@@ -21,7 +21,9 @@ export default function DashboardPage({ user, onNavigate }) {
       {/* ── Sarlavha ── */}
       <header style={topBarStyle}>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-          <div style={emblemStyle}><img src="/logo-mark.png" alt="" style={emblemImgStyle}/></div>
+          <div style={emblemStyle}>
+            <img src={`${import.meta.env.BASE_URL}logo-mark.png`} alt="" style={emblemImgStyle}/>
+          </div>
           <div>
             <div style={{ fontSize:16, fontWeight:800, color:theme.primaryDark, letterSpacing:'-0.02em', fontFamily:theme.fontDisplay }}>
               Surdo AI
