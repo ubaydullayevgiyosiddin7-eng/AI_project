@@ -31,7 +31,7 @@ export default function DemoSign({ signId }) {
             fontWeight: 900,
             color: '#fff',
             fontFamily: "'Space Grotesk', sans-serif",
-            background: 'linear-gradient(135deg, #a78bfa, #06b6d4)',
+            background: 'linear-gradient(135deg, #84cc16, #2dd4bf)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             lineHeight: 1,
@@ -45,7 +45,7 @@ export default function DemoSign({ signId }) {
         </div>
       </div>
 
-      <div style={{ fontSize: 13, color: '#e0e0ff', marginBottom: 14, lineHeight: 1.5 }}>
+      <div style={{ fontSize: 13, color: '#e4f6ea', marginBottom: 14, lineHeight: 1.5 }}>
         {sign.description}
       </div>
 

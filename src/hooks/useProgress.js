@@ -1,7 +1,7 @@
 // XP, level, dars progress — localStorage
 import { useState, useEffect, useCallback } from 'react';
 
-const KEY = 'signhand_progress';
+const KEY = 'surdo_ai_progress';
 
 const DEFAULT = {
   xp: 0,

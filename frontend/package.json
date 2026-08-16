@@ -1,5 +1,5 @@
 {
-  "name": "holomed-landing",
+  "name": "surdo-ai-landing",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
@@ -9,11 +9,20 @@
     "three": "^0.169.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "concurrently -k -n SAYT,ILOVA -c green,cyan \"react-scripts start\" \"npm --prefix .. run dev\"",
+    "start:sayt": "react-scripts start",
     "build": "react-scripts build"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead"],
-    "development": ["last 1 chrome version"]
+    "production": [
+      ">0.2%",
+      "not dead"
+    ],
+    "development": [
+      "last 1 chrome version"
+    ]
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
   }
 }

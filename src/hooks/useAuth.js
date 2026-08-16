@@ -4,8 +4,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 
-const TOKEN_KEY = 'signhand_token';
-const USER_KEY  = 'signhand_user';
+const TOKEN_KEY = 'surdo_ai_token';
+const USER_KEY  = 'surdo_ai_user';
 
 const DEMO_USERS = [
   { username: 'admin',  password: 'admin123',  full_name: 'Administrator', role: 'admin' },
@@ -20,8 +20,20 @@ function readUser() {
   } catch { return null; }
 }
 
+// Ro'yxatdan o'tish talab qilinmaydi — ilova hamma uchun ochiq.
+// Hech kim kirmagan bo'lsa mehmon sifatida ishlaydi.
+const GUEST = { username: 'mehmon', full_name: 'Mehmon', role: 'student' };
+
+// Sayt ichiga joylashtirilganda ism ?user= orqali uzatiladi
+function userFromQuery() {
+  try {
+    const name = new URLSearchParams(window.location.search).get('user');
+    return name ? { username: name, full_name: name, role: 'student' } : null;
+  } catch { return null; }
+}
+
 // ── Module-level holat — barcha chaqiruvlar shu yerdan o'qiydi ──
-let _user = readUser();
+let _user = userFromQuery() || readUser() || GUEST;
 const _listeners = new Set();
 
 function _setUser(u) {
@@ -55,8 +67,9 @@ export default function useAuth() {
       localStorage.removeItem(TOKEN_KEY);
       localStorage.removeItem(USER_KEY);
     } catch {}
-    _setUser(null);
+    _setUser(GUEST);
   }, []);
 
-  return { user: _user, login, logout, isLoggedIn: !!_user };
+  // isLoggedIn doim true — login ekrani umuman ko'rsatilmaydi
+  return { user: _user, login, logout, isLoggedIn: true };
 }

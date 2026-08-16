@@ -1,7 +1,7 @@
 // Foydalanuvchi kalibratsiyasi — qo'l hajmi, dominant qo'l, neytral pozitsiya
 import { handSize } from './handFeatures';
 
-const STORAGE_KEY = 'signhand_calibration';
+const STORAGE_KEY = 'surdo_ai_calibration';
 
 const DEFAULT = {
   handSize: null,         // bilek → o'rta MCP masofa

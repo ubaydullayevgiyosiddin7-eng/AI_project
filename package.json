@@ -1,10 +1,11 @@
 {
-  "name": "signhand",
+  "name": "surdo-ai",
   "private": true,
   "version": "0.1.0",
-  "description": "SignHand — O'zbek imo-ishora tili o'rgatish va real-time tarjimon platformasi",
+  "description": "Surdo AI — O'zbek imo-ishora tili o'rgatish va real-time tarjimon platformasi",
   "type": "module",
   "scripts": {
+    "start": "npm --prefix frontend start",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"

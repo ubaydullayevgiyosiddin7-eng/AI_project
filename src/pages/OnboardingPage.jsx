@@ -129,7 +129,7 @@ function Welcome({ onNext, onSkip }) {
     <>
       <h2 style={titleStyle}>Salom!</h2>
       <p style={textStyle}>
-        SignHand — O'zbek imo-ishora tilini o'rgatuvchi platforma. Boshlash uchun bir necha kichik sozlash kerak.
+        Surdo AI — O'zbek imo-ishora tilini o'rgatuvchi platforma. Boshlash uchun bir necha kichik sozlash kerak.
       </p>
       <ul style={{ marginTop: 14, marginBottom: 22, paddingLeft: 18, color: theme.textMuted, fontSize: 13, lineHeight: 1.7 }}>
         <li>Kameraga ruxsat berasiz</li>
@@ -223,7 +223,7 @@ function CalibrationStep({ videoRef, holistic, progress, elapsed, onSkip }) {
     <>
       <h2 style={titleStyle}>Qo'l hajmini o'lchaymiz</h2>
       <p style={textStyle}>
-        Qo'lingizni kadrga olib keling. Topilmasa — pastdagi <strong style={{ color: '#a78bfa' }}>O'tkazib yuborish</strong> tugmasini bosing.
+        Qo'lingizni kadrga olib keling. Topilmasa — pastdagi <strong style={{ color: '#84cc16' }}>O'tkazib yuborish</strong> tugmasini bosing.
       </p>
 
       <div style={{ marginTop: 16, marginBottom: 12, borderRadius: 12, overflow: 'hidden', aspectRatio: '16/10' }}>
@@ -246,7 +246,7 @@ function CalibrationStep({ videoRef, holistic, progress, elapsed, onSkip }) {
       <div style={{ height: 10, background: 'rgba(255,255,255,0.08)', borderRadius: 5, overflow: 'hidden' }}>
         <div style={{
           height: '100%', width: `${Math.round(progress * 100)}%`,
-          background: 'linear-gradient(90deg, #a78bfa, #06b6d4)',
+          background: 'linear-gradient(90deg, #84cc16, #2dd4bf)',
           transition: 'width 0.2s',
         }} />
       </div>
@@ -264,7 +264,7 @@ function CalibrationStep({ videoRef, holistic, progress, elapsed, onSkip }) {
             <li>Kaft kameraga qaragan, barmoqlar ochiq</li>
           </ul>
           {autoSkipIn > 0 && autoSkipIn < 8 && (
-            <div style={{ marginTop: 8, fontSize: 11, color: '#a78bfa', fontFamily: 'monospace' }}>
+            <div style={{ marginTop: 8, fontSize: 11, color: '#84cc16', fontFamily: 'monospace' }}>
               {autoSkipIn} sek dan keyin avtomatik o'tiladi...
             </div>
           )}

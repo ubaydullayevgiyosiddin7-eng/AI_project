@@ -1,5 +1,5 @@
-const TOKEN_KEY = 'holomed_token';
-const USER_KEY  = 'holomed_user';
+const TOKEN_KEY = 'surdo_ai_token';
+const USER_KEY  = 'surdo_ai_user';
 
 export function isLoggedIn() {
   return !!localStorage.getItem(TOKEN_KEY);

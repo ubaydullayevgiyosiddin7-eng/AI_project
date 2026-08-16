@@ -432,8 +432,8 @@ const mistakeBoxStyle = {
 };
 
 const dynamicHintBoxStyle = {
-  background: '#eff6ff',
-  border: `1px solid #bfdbfe`,
+  background: '#f1fbf5',
+  border: `1px solid #a7e8c6`,
   borderRadius: theme.radius,
   padding: '10px 14px',
 };

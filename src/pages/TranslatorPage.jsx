@@ -8,7 +8,7 @@ import TranslatorGuide from '../components/TranslatorGuide';
 import { SentenceBuilder } from '../core/sentenceBuilder';
 import theme from '../theme';
 
-const GUIDE_KEY = 'signhand_translator_guide_seen';
+const GUIDE_KEY = 'surdo_ai_translator_guide_seen';
 
 // Demo cheklovi: faqat "BU SUV" gapi uchun kerakli harflar
 const ALLOWED_DEMO_LETTERS = new Set(['B', 'U', 'S', 'V']);
@@ -198,7 +198,7 @@ export default function TranslatorPage({ onBack }) {
                 {builderRef.current.tokens.map((t, i) => (
                   <span key={i} style={{
                     fontSize: 28, fontWeight: 700, color: theme.primaryDark,
-                    background: '#dbeafe', padding: '4px 14px', borderRadius: 8,
+                    background: '#d9f7e6', padding: '4px 14px', borderRadius: 8,
                   }}>
                     {t.value}
                   </span>

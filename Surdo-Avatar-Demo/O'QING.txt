@@ -1,0 +1,27 @@
+SURDO — Matn/Ovoz → 3D Avatar (mustaqil demo)
+================================================
+
+ISHGA TUSHIRISH:
+  index.html faylini ikki marta bosing — istalgan zamonaviy brauzerda
+  (Chrome, Edge) to'g'ridan-to'g'ri ochiladi. O'rnatish, npm, server —
+  hech narsa kerak emas.
+
+QANDAY ISHLATISH:
+  1. Pastdagi lug'at tugmalaridan birini bosing (masalan "Salom")
+     — YOKI yuqoridagi qatorga so'z yozib "Ko'rsat"ni bosing.
+  2. Bir nechta so'zni bo'sh joy bilan yozsangiz (masalan:
+     "salom rahmat iltimos") — avatar ularni ketma-ket ko'rsatadi.
+  3. Brauzeringiz qo'llab-quvvatlasa, mikrofon tugmasi orqali ovoz
+     bilan ham kiritish mumkin.
+
+TARKIBI:
+  index.html   — butun dastur (HTML+CSS+JS, tashqi kutubxonasiz)
+  videos/      — 17 ta oldindan render qilingan avatar videosi (~2MB)
+
+BU NIMA:
+  Bu — katta SIGNORA AI / SignHand AI loyihasining "Surdo" bo'limi,
+  alohida ajratib olingan. Avatar harakatlari MMS Player (DFKI
+  tadqiqot loyihasi) va AVASAG korpusi yordamida oldindan render
+  qilingan. Hozircha 17 ta so'z (asli nemis tilida yozib olingan,
+  o'zbekcha ma'no bilan belgilangan) ishlaydi — bu texnologiyaning
+  ishlashini ko'rsatuvchi MVP, to'liq o'zbek surdo tili emas.

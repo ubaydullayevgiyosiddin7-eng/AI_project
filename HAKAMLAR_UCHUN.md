@@ -1,4 +1,4 @@
-# SignHand — Hakamlar uchun tushuntirish
+# Surdo AI — Hakamlar uchun tushuntirish
 
 > O'zbek imo-ishora tili o'rgatuvchi va tarjimon platformasi
 > Bu hujjatni dasturlashni bilmagan odam ham o'qib, tushunib hakamlarga aytib bera oladi.
@@ -7,7 +7,7 @@
 
 ## 1. Loyihamiz nima?
 
-**SignHand** — bu o'zbek imo-ishora tilini o'rgatuvchi va imo-ishorani matnga aylantiruvchi onlayn dastur. Foydalanuvchi noutbukning kamerasi oldida qo'l harakatlarini ko'rsatadi — dastur ularni tan oladi va ekranda harf yoki so'z yozadi.
+**Surdo AI** — bu o'zbek imo-ishora tilini o'rgatuvchi va imo-ishorani matnga aylantiruvchi onlayn dastur. Foydalanuvchi noutbukning kamerasi oldida qo'l harakatlarini ko'rsatadi — dastur ularni tan oladi va ekranda harf yoki so'z yozadi.
 
 **Kim uchun?**
 - Kar-soqov insonlar bilan muloqot qilmoqchi bo'lganlar
@@ -326,7 +326,7 @@ Faqat developer vaqti sarflandi.
 
 ## 10. Yopiq so'z
 
-SignHand — bu nafaqat texnik loyiha, balki **ijtimoiy ahamiyatli loyiha**. O'zbekistonda kar-soqov insonlar ko'p, lekin ular bilan muloqot qiluvchi vositalar kam. Biz shu masalada birinchi qadamni qo'ymoqchimiz.
+Surdo AI — bu nafaqat texnik loyiha, balki **ijtimoiy ahamiyatli loyiha**. O'zbekistonda kar-soqov insonlar ko'p, lekin ular bilan muloqot qiluvchi vositalar kam. Biz shu masalada birinchi qadamni qo'ymoqchimiz.
 
 **Maqsadimiz:** har bir o'zbek imo-ishora tilini ozroq bo'lsa ham tushuna olsin.
 

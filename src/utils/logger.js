@@ -1,5 +1,5 @@
 /**
- * HoloMed Logger
+ * Surdo AI Logger
  * - window.__HOLOMED_LOGS__  — in-memory, modul bo'yicha
  * - LogViewer panel orqali ko'rish
  * - Download: LogViewer pastidagi "💾 Saqlash" tugmasi
@@ -38,7 +38,7 @@ function write(module, level, args) {
 
   // Notify LogViewer
   try {
-    window.dispatchEvent(new CustomEvent('holomed-log', { detail: { module, entry } }));
+    window.dispatchEvent(new CustomEvent('surdo-log', { detail: { module, entry } }));
   } catch (_) {}
 }
 
@@ -67,7 +67,7 @@ export function downloadLogs() {
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href     = url;
-  a.download = `holomed_log_${new Date().toISOString().slice(0,19).replace(/[:.]/g,'-')}.txt`;
+  a.download = `surdo_log_${new Date().toISOString().slice(0,19).replace(/[:.]/g,'-')}.txt`;
   a.click();
   URL.revokeObjectURL(url);
 }

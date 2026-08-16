@@ -208,7 +208,7 @@ export const LESSONS = [
 export const LESSONS_BY_ID = Object.fromEntries(LESSONS.map(l => [l.id, l]));
 
 export const LESSON_LEVELS = [
-  { level: 1, name: 'Statik alifbo',     color: '#a78bfa', icon: '📖' },
+  { level: 1, name: 'Statik alifbo',     color: '#84cc16', icon: '📖' },
   { level: 2, name: 'Harakatli alifbo',  color: '#f59e0b', icon: '🔄' },
   { level: 3, name: "Asosiy so'zlar",    color: '#10b981', icon: '💬' },
 ];

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Surdo — Matn/Ovoz → 3D Avatar</title>
+<style>
+  :root {
+    --primary: #0c4a6e;
+    --primary-light: #0ea5e9;
+    --primary-dark: #082f49;
+    --accent: #16a34a;
+    --danger: #dc2626;
+    --warning: #d97706;
+    --bg: #f1f5f9;
+    --surface: #ffffff;
+    --text: #0f172a;
+    --text-muted: #475569;
+    --text-light: #94a3b8;
+    --border: #e2e8f0;
+    --border-strong: #cbd5e1;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --radius-sm: 6px;
+    --shadow: 0 1px 3px rgba(15,23,42,0.08), 0 1px 2px rgba(15,23,42,0.04);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  }
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .emblem {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: #fff; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800;
+  }
+  .title { font-size: 15px; color: var(--primary-dark); font-weight: 700; }
+  .subtitle { font-size: 11px; color: var(--text-muted); }
+  .mvp-badge {
+    background: rgba(22,163,74,0.1); color: var(--accent);
+    padding: 5px 12px; border-radius: var(--radius-sm);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+  }
+  main {
+    max-width: 1200px; margin: 0 auto; padding: 20px 16px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  @media (max-width: 800px) { main { grid-template-columns: 1fr; } }
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px;
+    box-shadow: var(--shadow);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .panel-label { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.06em; }
+  .input-row { display: flex; gap: 8px; }
+  input[type="text"] {
+    flex: 1; background: var(--bg); border: 1px solid var(--border-strong);
+    border-radius: var(--radius); padding: 10px 14px; font-size: 14px;
+    color: var(--text); font-family: inherit; outline: none;
+  }
+  button {
+    font-family: inherit; cursor: pointer; border: none;
+    border-radius: var(--radius); font-size: 13px; font-weight: 700;
+  }
+  .btn-primary { background: var(--primary); color: #fff; padding: 10px 16px; white-space: nowrap; }
+  .btn-mic {
+    background: var(--surface); border: 1px solid var(--border-strong);
+    color: var(--text); padding: 10px 14px; font-size: 15px; white-space: nowrap;
+  }
+  .btn-mic.active { background: rgba(220,38,38,0.1); border-color: var(--danger); color: var(--danger); font-size: 12px; }
+  .result-row { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    padding: 4px 10px; border-radius: var(--radius-sm); font-size: 12px;
+    font-weight: 600; border: 1px solid transparent;
+  }
+  .chip-ok { background: #dbeafe; color: var(--primary-dark); }
+  .chip-active { background: var(--primary); color: #fff; }
+  .chip-miss { background: rgba(220,38,38,0.08); color: var(--danger); border: 1px dashed rgba(220,38,38,0.35); }
+  .warn-hint { font-size: 11.5px; color: var(--warning); font-weight: 500; }
+  .divider { height: 1px; background: var(--border); margin: 4px 0; }
+  .word-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .word-chip {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text);
+    padding: 6px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 500;
+  }
+  .hint-box {
+    font-size: 11px; color: var(--text-muted); background: var(--bg);
+    padding: 10px; border-radius: var(--radius-sm); line-height: 1.5; margin-top: auto;
+  }
+  .avatar-panel { align-items: center; }
+  .avatar-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+  .queue-badge { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+  .video-frame {
+    flex: 1; width: 100%; min-height: 380px; background: #0b1412;
+    border-radius: var(--radius); display: flex; align-items: center;
+    justify-content: center; overflow: hidden;
+  }
+  .video-frame video { max-width: 100%; max-height: 100%; }
+  .empty-state { text-align: center; padding: 20px; color: var(--text-light); font-size: 13px; }
+  .empty-state .icon { font-size: 40px; margin-bottom: 10px; }
+  .current-label {
+    font-size: 18px; font-weight: 700; color: var(--primary-dark);
+    background: #dbeafe; padding: 6px 18px; border-radius: var(--radius-sm);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="emblem">SA</div>
+    <div>
+      <div class="title">Surdo</div>
+      <div class="subtitle">Matn / ovoz → 3D avatar imo-ishora</div>
+    </div>
+  </div>
+  <div class="mvp-badge" id="mvpBadge">MVP</div>
+</header>
+
+<main>
+  <section class="panel">
+    <div class="panel-label">MATN YOKI OVOZ KIRITING</div>
+    <form id="form" class="input-row">
+      <input id="input" type="text" placeholder="masalan: salom, rahmat..." autocomplete="off" />
+      <button type="button" id="micBtn" class="btn-mic" style="display:none">🎤</button>
+      <button type="submit" class="btn-primary">Ko'rsat</button>
+    </form>
+
+    <div id="resultRow" class="result-row"></div>
+    <div id="warnHint" class="warn-hint" style="display:none">
+      Ba'zi so'zlar hozircha lug'atda yo'q — pastdagi ro'yxatdan tanlang.
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="panel-label">YOKI LUG'ATDAN TANLANG</div>
+    <div id="wordGrid" class="word-grid"></div>
+
+    <div class="hint-box">
+      <strong style="color: var(--primary)">MVP haqida:</strong> Avatar harakatlari MMS Player
+      (DFKI tadqiqot loyihasi) va AVASAG korpusi orqali oldindan render qilingan. Hozircha
+      <span id="wordCount"></span> ta so'z ishlaydi — kelajakda o'zbek surdo tili korpusi bilan kengaytiriladi.
+    </div>
+  </section>
+
+  <section class="panel avatar-panel">
+    <div class="avatar-header">
+      <div class="panel-label">3D AVATAR</div>
+      <div id="queueBadge" class="queue-badge"></div>
+    </div>
+    <div class="video-frame">
+      <video id="video" muted playsinline style="display:none"></video>
+      <div id="emptyState" class="empty-state">
+        <div class="icon">🧍</div>
+        <div>Chapdan so'z yozing yoki tanlang — avatar shu yerda harakatlanadi</div>
+      </div>
+    </div>
+    <div id="currentLabel" class="current-label" style="display:none"></div>
+  </section>
+</main>
+
+<script>
+// ── Lug'at ──
+const SURDO_WORDS = [
+  { id: 'HALLO',       uz: 'Salom',                video: 'videos/HALLO.mp4' },
+  { id: 'DANKE',       uz: 'Rahmat',                video: 'videos/DANKE.mp4' },
+  { id: 'BITTE',       uz: 'Iltimos',               video: 'videos/BITTE.mp4' },
+  { id: 'OK',          uz: 'OK / Yaxshi',           video: 'videos/OK.mp4' },
+  { id: 'ARZT',        uz: 'Shifokor',              video: 'videos/ARZT.mp4' },
+  { id: 'BAHNHOF',     uz: 'Vokzal',                video: 'videos/BAHNHOF.mp4' },
+  { id: 'ZUG',         uz: 'Poyezd',                video: 'videos/ZUG.mp4' },
+  { id: 'POLIZEI',     uz: 'Politsiya',             video: 'videos/POLIZEI.mp4' },
+  { id: 'FEUER',       uz: "Yong'in",               video: 'videos/FEUER.mp4' },
+  { id: 'TOILETTE',    uz: 'Hojatxona',             video: 'videos/TOILETTE.mp4' },
+  { id: 'AUSGANG',     uz: 'Chiqish',               video: 'videos/AUSGANG.mp4' },
+  { id: 'HEUTE',       uz: 'Bugun',                 video: 'videos/HEUTE.mp4' },
+  { id: 'ZEIT',        uz: 'Vaqt',                  video: 'videos/ZEIT.mp4' },
+  { id: 'WARTEN',      uz: 'Kutish',                video: 'videos/WARTEN.mp4' },
+  { id: 'INFORMATION', uz: "Ma'lumot",              video: 'videos/INFORMATION.mp4' },
+  { id: 'ANKOMMEN',    uz: 'Kelmoq / Yetib kelish', video: 'videos/ANKOMMEN.mp4' },
+  { id: 'UHR',         uz: 'Soat',                  video: 'videos/UHR.mp4' },
+];
+
+const AVATAR_PLAYBACK_RATE = 0.7; // 30% sekinlashtirilgan
+
+function normalize(s) {
+  return (s || '')
+    .toLowerCase()
+    .replace(/[ʻ'’`]/g, '')
+    .replace(/[^a-z0-9\s]/gi, '')
+    .trim();
+}
+
+function findWord(token) {
+  const norm = normalize(token);
+  if (!norm) return null;
+  return SURDO_WORDS.find(w => {
+    if (normalize(w.id) === norm) return true;
+    return normalize(w.uz).split('/').some(part => normalize(part) === norm);
+  }) || null;
+}
+
+function resolveText(text) {
+  return (text || '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(token => ({ token, word: findWord(token) }));
+}
+
+// ── UI holati ──
+let queue = [];
+let queueIndex = 0;
+
+const $ = sel => document.querySelector(sel);
+const form = $('#form');
+const input = $('#input');
+const resultRow = $('#resultRow');
+const warnHint = $('#warnHint');
+const wordGrid = $('#wordGrid');
+const video = $('#video');
+const emptyState = $('#emptyState');
+const currentLabel = $('#currentLabel');
+const queueBadge = $('#queueBadge');
+const micBtn = $('#micBtn');
+
+$('#mvpBadge').textContent = `MVP · ${SURDO_WORDS.length} so'zlik lug'at`;
+$('#wordCount').textContent = SURDO_WORDS.length;
+
+SURDO_WORDS.forEach(w => {
+  const btn = document.createElement('button');
+  btn.className = 'word-chip';
+  btn.textContent = w.uz;
+  btn.onclick = () => {
+    input.value = w.uz.split('/')[0].trim();
+    renderResult([{ token: w.uz, word: w }]);
+    setQueue([w]);
+  };
+  wordGrid.appendChild(btn);
+});
+
+let lastResolved = [];
+
+function renderResult(resolved) {
+  lastResolved = resolved;
+  resultRow.innerHTML = '';
+  let hasMiss = false;
+  resolved.forEach(r => {
+    const span = document.createElement('span');
+    span.className = 'chip ' + (r.word ? (queue[queueIndex] === r.word ? 'chip-active' : 'chip-ok') : 'chip-miss');
+    span.textContent = r.token;
+    resultRow.appendChild(span);
+    if (!r.word) hasMiss = true;
+  });
+  warnHint.style.display = hasMiss ? 'block' : 'none';
+}
+
+function setQueue(words) {
+  queue = words;
+  queueIndex = 0;
+  playCurrent();
+}
+
+function playCurrent() {
+  const word = queue[queueIndex];
+  if (!word) {
+    video.style.display = 'none';
+    emptyState.style.display = 'block';
+    currentLabel.style.display = 'none';
+    queueBadge.textContent = '';
+    return;
+  }
+  emptyState.style.display = 'none';
+  video.style.display = 'block';
+  video.src = word.video;
+  video.currentTime = 0;
+  video.playbackRate = AVATAR_PLAYBACK_RATE;
+  video.play().catch(() => {});
+  currentLabel.style.display = 'inline-block';
+  currentLabel.textContent = word.uz;
+  queueBadge.textContent = queue.length > 1 ? `${queueIndex + 1} / ${queue.length}` : '';
+}
+
+video.addEventListener('ended', () => {
+  if (queueIndex + 1 < queue.length) {
+    queueIndex += 1;
+    playCurrent();
+    renderResult(lastResolved);
+  }
+});
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const text = input.value.trim();
+  if (!text) return;
+  const resolved = resolveText(text);
+  renderResult(resolved);
+  const found = resolved.map(r => r.word).filter(Boolean);
+  setQueue(found);
+});
+
+// ── Mikrofon (Web Speech API) ──
+const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+let listening = false;
+
+if (SpeechRecognitionAPI) {
+  micBtn.style.display = 'inline-block';
+  micBtn.addEventListener('click', () => {
+    if (listening) {
+      recognition && recognition.stop();
+      return;
+    }
+    recognition = new SpeechRecognitionAPI();
+    recognition.lang = 'uz-UZ';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = ev => {
+      const text = ev.results[0][0].transcript;
+      input.value = text;
+      form.requestSubmit();
+    };
+    recognition.onend = () => { listening = false; micBtn.classList.remove('active'); micBtn.textContent = '🎤'; };
+    recognition.onerror = () => { listening = false; micBtn.classList.remove('active'); micBtn.textContent = '🎤'; };
+    listening = true;
+    micBtn.classList.add('active');
+    micBtn.textContent = '● Tinglanmoqda';
+    recognition.start();
+  });
+}
+</script>
+</body>
+</html>

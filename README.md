@@ -1,10 +1,10 @@
-# SignHand
+# Surdo AI
 
 > O'zbek imo-ishora tilini o'rgatuvchi va real-time tarjimon platformasi
 
 ## Loyiha haqida
 
-SignHand — onlayn dastur. Foydalanuvchi web-kamera oldida qo'l harakatlarini ko'rsatadi, dastur ularni tan oladi va ekranda harf yoki so'z yozadi.
+Surdo AI — onlayn dastur. Foydalanuvchi web-kamera oldida qo'l harakatlarini ko'rsatadi, dastur ularni tan oladi va ekranda harf yoki so'z yozadi.
 
 **3 ta asosiy bo'lim:**
 - **Darslik** — bosqichli imo-ishora kursi (29 harf, 24 dars)

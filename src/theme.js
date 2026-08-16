@@ -1,44 +1,52 @@
-// Rasmiy davlat uslubidagi ochiq tema
-// O'zbekiston bayrog'i rangidan ilhomlangan: ko'k, oq, yashil
-// Toza, professional, ochiq dizayn
+// Surdo AI — "Zumrad & Laym" mavzusi
+// Sayt (frontend) palitrasiga to'liq mos: zumrad #10b981 → laym #a3e635, mint #2dd4bf
 
 export const theme = {
   // Asosiy ranglar
-  primary:       '#0c4a6e',   // chuqur ko'k — rasmiy
-  primaryLight:  '#0ea5e9',   // yorqin ko'k — aksent
-  primaryDark:   '#082f49',   // qoramtir ko'k — sarlavhalar
-  accent:        '#16a34a',   // yashil — tasdiqlash
-  accentLight:   '#22c55e',
+  primary:       '#059669',   // zumrad — asosiy
+  primaryLight:  '#10b981',   // yorqin zumrad — aksent
+  primaryDark:   '#04291a',   // to'q — sarlavhalar
+  accent:        '#65a30d',   // laym — tasdiqlash
+  accentLight:   '#a3e635',
+  lime:          '#a3e635',
+  mint:          '#2dd4bf',
   danger:        '#dc2626',   // qizil — xatolar
-  warning:       '#d97706',   // sariq-jigarrang
-  info:          '#0891b2',   // havorang
+  warning:       '#ca8a04',   // sariq
+  info:          '#0d9488',   // mint-havorang
+
+  // Gradientlar
+  gradient:      'linear-gradient(120deg,#10b981,#4ade80 48%,#a3e635)',
+  gradientSoft:  'linear-gradient(135deg,rgba(16,185,129,.12),rgba(163,230,53,.12))',
 
   // Fon va sirtlar
-  bg:            '#f1f5f9',   // sahifa foni — ochiq kulrang
-  bgAlt:         '#e2e8f0',   // alt fon
-  surface:       '#ffffff',   // kartochka foni
-  surfaceHover:  '#f8fafc',   // ustki holat
+  bg:            '#f5fdf8',   // sahifa foni — yashil-oq
+  bgAlt:         '#e9f8f0',
+  surface:       '#ffffff',
+  surfaceHover:  '#f1fbf5',
+  surfaceAlt:    '#e4f6ea',
 
   // Matn
-  text:          '#0f172a',   // asosiy matn
-  textMuted:     '#475569',   // ikkilamchi matn
-  textLight:     '#94a3b8',   // ozgina matn
+  text:          '#04291a',
+  textMuted:     '#2b5a43',
+  textLight:     '#6d9a84',
   textOnPrimary: '#ffffff',
+  textOnLime:    '#04180f',   // laym/zumrad gradient ustidagi matn
 
   // Chegaralar
-  border:        '#e2e8f0',
-  borderStrong:  '#cbd5e1',
-  borderFocus:   '#0ea5e9',
+  border:        '#cdeada',
+  borderStrong:  '#a2d9bc',
+  borderFocus:   '#10b981',
 
-  // Konteyner uchun shadow
-  shadow:        '0 1px 3px rgba(15,23,42,0.08), 0 1px 2px rgba(15,23,42,0.04)',
-  shadowMd:      '0 4px 12px rgba(15,23,42,0.08)',
-  shadowLg:      '0 10px 30px rgba(15,23,42,0.12)',
+  // Soyalar — yashil ohangli
+  shadow:        '0 1px 3px rgba(4,41,26,0.06), 0 1px 2px rgba(4,41,26,0.04)',
+  shadowMd:      '0 6px 24px rgba(4,41,26,0.09)',
+  shadowLg:      '0 18px 50px rgba(4,41,26,0.13)',
+  shadowAcc:     '0 8px 30px rgba(16,185,129,0.28)',
 
-  // Radius
-  radius:        '10px',
-  radiusLg:      '14px',
-  radiusSm:      '6px',
+  // Radius — sayt bilan bir xil
+  radius:        '12px',
+  radiusLg:      '18px',
+  radiusSm:      '8px',
 
   // Spacing scale
   s1:  '4px',
@@ -49,6 +57,10 @@ export const theme = {
   s6:  '24px',
   s8:  '32px',
   s10: '40px',
+
+  // Shriftlar — sayt bilan bir xil juftlik
+  font:          "'Inter', -apple-system, system-ui, sans-serif",
+  fontDisplay:   "'Outfit', 'Inter', sans-serif",
 };
 
 // Umumiy uslublar
@@ -58,7 +70,7 @@ export const styles = {
     width: '100%',
     background: theme.bg,
     color: theme.text,
-    fontFamily: "'Inter', -apple-system, system-ui, sans-serif",
+    fontFamily: theme.font,
     display: 'flex',
     flexDirection: 'column',
   },
@@ -76,27 +88,29 @@ export const styles = {
     padding: theme.s6,
   },
   btnPrimary: {
-    background: theme.primary,
-    color: theme.textOnPrimary,
+    background: theme.gradient,
+    color: theme.textOnLime,
     border: 'none',
     borderRadius: theme.radius,
-    padding: '10px 20px',
+    padding: '11px 22px',
     fontSize: 14,
-    fontWeight: 600,
+    fontWeight: 700,
     cursor: 'pointer',
     fontFamily: 'inherit',
-    transition: 'background 0.15s',
+    boxShadow: theme.shadowAcc,
+    transition: 'transform 0.18s, box-shadow 0.18s',
   },
   btnSecondary: {
     background: theme.surface,
     color: theme.primary,
-    border: `1px solid ${theme.borderStrong}`,
+    border: `1.5px solid ${theme.borderStrong}`,
     borderRadius: theme.radius,
-    padding: '10px 20px',
+    padding: '11px 22px',
     fontSize: 14,
-    fontWeight: 600,
+    fontWeight: 700,
     cursor: 'pointer',
     fontFamily: 'inherit',
+    transition: 'border-color 0.18s, background 0.18s',
   },
   btnGhost: {
     background: 'transparent',
@@ -104,16 +118,16 @@ export const styles = {
     border: 'none',
     padding: '8px 14px',
     fontSize: 13,
-    fontWeight: 500,
+    fontWeight: 600,
     cursor: 'pointer',
     fontFamily: 'inherit',
   },
   input: {
     width: '100%',
     background: theme.surface,
-    border: `1px solid ${theme.borderStrong}`,
+    border: `1.5px solid ${theme.border}`,
     borderRadius: theme.radius,
-    padding: '10px 14px',
+    padding: '11px 14px',
     fontSize: 14,
     color: theme.text,
     fontFamily: 'inherit',
@@ -123,7 +137,7 @@ export const styles = {
     display: 'block',
     fontSize: 12,
     color: theme.textMuted,
-    fontWeight: 600,
+    fontWeight: 700,
     marginBottom: 6,
     letterSpacing: '0.02em',
   },

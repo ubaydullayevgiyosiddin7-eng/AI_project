@@ -1,369 +1,313 @@
-// EducationPage.jsx — Fan bo'limlari tanlash + HoloMed ochish
+// EducationPage.jsx — Darslik: asosiy kurs, o'quv yo'li va kelgusi modullar
 import React, { useState } from 'react';
 import BorderGlow from './BorderGlow';
 
-const SUBJECTS = [
+// O'zbek daktil alifbosi — 29 harf
+const ALPHABET = ['A','B','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','X','Y','Z',"O'","G'",'Sh','Ch','Ng'];
+
+// O'quv yo'li — ilovadagi darslarning bosqichlari
+const PATH = [
   {
-    id: 'sign',
-    icon: '🖐️',
-    label: 'IMO-ISHORA TILI',
-    sublabel: "O'zbek Daktil Alifbosi",
-    desc: "29 ta harf, 24 bosqichli dars, real-time tarjimon — MediaPipe AI orqali qo'l va yuz harakatlarini taniydi.",
-    color: '#0ea5e9',
-    glow: '200 80 75',
-    colors: ['#0ea5e9','#0c4a6e','#38bdf8'],
-    active: true,
-    features: ['29 ta Daktil Harfi','Real-Time Tarjimon','Yuz Mimikasi Grammatika','24 Bosqichli Dars'],
+    n: '01', c: '#10b981', icon: '✋',
+    title: 'Statik harflar',
+    sub: "Qo'l qimirlamaydi — faqat barmoq shakli",
+    lessons: ['A, B, E', 'I, L, O', 'V, U, Sh', 'Ch, F, G', 'M, N, R, S, T, X'],
   },
   {
-    id: 'words',
-    icon: '💬',
-    label: 'SO\'ZLAR',
-    sublabel: 'Lug\'at Kursi',
-    desc: "Eng ko'p ishlatiladigan so'zlar: oila, salomlashish, raqamlar, ranglar va kunlar.",
-    color: '#16a34a',
-    glow: '140 70 45',
-    colors: ['#16a34a','#22c55e','#86efac'],
-    active: false,
+    n: '02', c: '#2dd4bf', icon: '🔄',
+    title: 'Harakatli harflar',
+    sub: "Kaft yo'nalishi va qo'l harakati qo'shiladi",
+    lessons: ['P, Q — kaft pastga', 'D, K — oddiy harakat', 'H, Y, J — egri chiziq', 'Z — zigzag', "O' — halqa"],
   },
   {
-    id: 'sentence',
-    icon: '📝',
-    label: 'GAP TUZISH',
-    sublabel: 'Grammatika',
-    desc: "Qisqa gaplar tuzish: savol, inkor va tasdiq jumlalari yuz mimikasi orqali.",
-    color: '#0891b2',
-    glow: '195 85 38',
-    colors: ['#0891b2','#06b6d4','#67e8f9'],
-    active: false,
+    n: '03', c: '#a3e635', icon: '💬',
+    title: "So'z va iboralar",
+    sub: "Harflardan ma'noli birikmalarga o'tish",
+    lessons: ['Salomlashish', "Oila a'zolari", 'Tasdiq va inkor', 'Raqamlar 1-5', 'Olmoshlar: Men, Sen'],
   },
   {
-    id: 'conversation',
-    icon: '👥',
-    label: 'SUHBAT',
-    sublabel: 'Real Muloqot',
-    desc: "Kar-soqovlar bilan suhbatlashish uchun amaliy modullar — kelajakda qo'shiladi.",
-    color: '#f59e0b',
-    glow: '45 90 70',
-    colors: ['#f59e0b','#fbbf24','#fcd34d'],
-    active: false,
+    n: '04', c: '#84cc16', icon: '🏆',
+    title: 'Sinov va sertifikat',
+    sub: 'Bilimni tekshirish, XP va daraja',
+    lessons: ['Statik alifbo bilimdoni', 'Alifbo ustasi'],
   },
 ];
 
-export default function EducationPage({ navigateTo, dark, openApp }) {
-  const [hovered, setHovered] = useState(null);
-  const [holoMedOpen, setHoloMedOpen] = useState(false);
-  const t1 = dark ? '#f0f6ff' : '#0f172a';
-  const t2 = dark ? 'rgba(196,220,255,.85)' : '#374151';
-  const t3 = dark ? 'rgba(148,180,220,.65)' : '#94a3b8';
-  const cardBg = dark ? 'rgba(4,14,36,.82)' : '#ffffff';
-  const border = dark ? 'rgba(99,180,255,.2)' : '#cbd5e1';
+const SOON = [
+  { icon: '📖', label: "Kengaytirilgan lug'at", desc: "500+ kundalik so'z: ranglar, kunlar, kasblar, ovqatlar.", c: '#2dd4bf' },
+  { icon: '📝', label: 'Gap tuzish',            desc: 'Savol, inkor va tasdiq jumlalari yuz mimikasi orqali.', c: '#a3e635' },
+  { icon: '👥', label: 'Jonli suhbat',          desc: 'Kar-soqovlar bilan muloqot uchun amaliy modullar.',     c: '#22c55e' },
+];
 
-  const openMedicine = () => setHoloMedOpen(true);
-  const openInNewTab = () => {
-    if (openApp) openApp('app');
-    else window.open('http://localhost:5173', '_blank');
-  };
+export default function EducationPage({ navigateTo, dark, openApp }) {
+  const [hoverStage, setHoverStage] = useState(null);
+  const t1 = 'var(--t1)', t2 = 'var(--t2)', t3 = 'var(--t3)';
+  const cardBg = dark ? 'rgba(7,26,19,.88)' : '#ffffff';
+
+  // Ilova saytning o'z ichida ochiladi — yangi tab emas
+  const start = () => openApp && openApp('app');
+  const totalLessons = PATH.reduce((s, p) => s + p.lessons.length, 0);
 
   return (
-    <div style={{ padding:'0 0 80px', minHeight:'100vh' }}>
-      {/* ── HoloMed 3D Modal ── */}
-      {holoMedOpen && (
-        <div style={{
-          position:'fixed', inset:0, zIndex:9999,
-          background:'rgba(0,0,0,.92)',
-          display:'flex', flexDirection:'column',
+    <div>
+      {/* ══ HERO ══ */}
+      <section style={{ padding:'52px clamp(20px,5vw,72px) 40px', maxWidth:1240, margin:'0 auto' }}>
+        <div className="chip a-su d0" style={{ marginBottom:24 }}>
+          <span className="dot"/> Ta'lim markazi
+        </div>
+        <h1 className="a-su d1" style={{
+          fontFamily:'var(--font-d)', fontSize:'clamp(34px,4.6vw,58px)', fontWeight:800,
+          lineHeight:1.06, letterSpacing:'-.045em', color:t1, marginBottom:18, maxWidth:760,
         }}>
-          {/* Modal header */}
-          <div style={{
-            height:52, flexShrink:0,
-            background: dark?'rgba(2,11,26,.95)':'#0f172a',
-            borderBottom:'1px solid rgba(6,182,212,.3)',
-            display:'flex', alignItems:'center', justifyContent:'space-between',
-            padding:'0 20px',
-          }}>
-            <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-              <div style={{
-                width:28, height:28, borderRadius:8,
-                background:'linear-gradient(135deg,#0ea5e9,#0c4a6e)',
-                display:'flex', alignItems:'center', justifyContent:'center',
-                fontSize:12, fontWeight:800, color:'#fff',
-              }}>SH</div>
-              <span style={{ color:'#e2e8f0', fontWeight:700, fontSize:14, fontFamily:'Space Grotesk' }}>
-                SignHand — Imo-Ishora Tili
-              </span>
-              <span style={{
-                padding:'2px 10px', borderRadius:100, fontSize:10, fontWeight:700,
-                background:'rgba(16,185,129,.15)', border:'1px solid rgba(16,185,129,.4)',
-                color:'#34d399',
-              }}>● LIVE</span>
-            </div>
-            <div style={{ display:'flex', gap:8 }}>
-              <a href="http://localhost:5173" target="_blank" rel="noreferrer" style={{
-                padding:'6px 14px', borderRadius:8, fontSize:12, fontWeight:600,
-                background:'rgba(14,165,233,.15)', border:'1px solid rgba(14,165,233,.35)',
-                color:'#67e8f9', textDecoration:'none', cursor:'pointer',
-              }}>⤢ To'liq ekran</a>
-              <button onClick={() => setHoloMedOpen(false)} style={{
-                padding:'6px 14px', borderRadius:8, fontSize:12, fontWeight:600,
-                background:'rgba(239,68,68,.15)', border:'1px solid rgba(239,68,68,.35)',
-                color:'#fb7185', cursor:'pointer',
-              }}>✕ Yopish</button>
-            </div>
-          </div>
-          {/* iframe */}
-          <iframe
-            src="http://localhost:5173"
-            title="SignHand"
-            allow="camera; microphone"
-            style={{ flex:1, border:'none', width:'100%' }}
-          />
-        </div>
-      )}
-
-      {/* ── Hero ── */}
-      <section style={{ padding:'64px clamp(24px,5vw,80px) 48px', maxWidth:1280, margin:'0 auto' }}>
-        <div style={{ maxWidth:680 }}>
-          <div style={{
-            display:'inline-flex', alignItems:'center', gap:8,
-            padding:'4px 14px', borderRadius:100, marginBottom:28,
-            background: dark?'rgba(6,182,212,.14)':'rgba(6,182,212,.08)',
-            border:`1px solid ${dark?'rgba(6,182,212,.45)':'rgba(6,182,212,.3)'}`,
-            fontFamily:'monospace', fontSize:10, fontWeight:800,
-            letterSpacing:'.16em', textTransform:'uppercase',
-            color: dark?'#67e8f9':'#0891b2',
-          }}>◎ Ta'lim Markazi</div>
-          <h1 style={{
-            fontFamily:"'Space Grotesk',sans-serif",
-            fontSize:'clamp(36px,4.5vw,60px)', fontWeight:900,
-            lineHeight:1.08, letterSpacing:'-.04em',
-            color:t1, marginBottom:20,
-            textShadow: dark?'0 0 40px rgba(6,182,212,.22)':'none',
-          }}>Fan Bo'limini Tanlang</h1>
-          <div style={{
-            background: dark?'rgba(2,11,26,.62)':'#ffffff',
-            backdropFilter: dark?'blur(16px)':'none',
-            borderRadius:16, padding:'18px 22px',
-            border:`1px solid ${dark?'rgba(6,182,212,.2)':'rgba(6,182,212,.18)'}`,
-          }}>
-            <p style={{ fontSize:'clamp(15px,1.4vw,17px)', lineHeight:1.82, color:t2, margin:0 }}>
-              3D interaktiv muhitda o'zingiz tanlagan fan bo'yicha chuqur bilim oling.
-              Hozircha{' '}
-              <span style={{ color:dark?'#06b6d4':'#0891b2', fontWeight:700 }}>Tibbiyot</span>{' '}
-              bo'limi to'liq ishlaydi. Boshqa bo'limlar tez kunda qo'shiladi.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Subject Cards ── */}
-      <section style={{ padding:'0 clamp(24px,5vw,80px) 60px', maxWidth:1280, margin:'0 auto' }}>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:20 }}>
-          {SUBJECTS.map(sub => (
-            <div key={sub.id} style={{ position:'relative' }}>
-              {sub.active ? (
-                /* ACTIVE — Tibbiyot */
-                <BorderGlow
-                  backgroundColor={cardBg}
-                  glowColor={sub.glow}
-                  borderRadius={22}
-                  glowRadius={55}
-                  glowIntensity={1.5}
-                  coneSpread={38}
-                  colors={sub.colors}
-                >
-                  <div
-                    onClick={openMedicine}
-                    onMouseEnter={() => setHovered(sub.id)}
-                    onMouseLeave={() => setHovered(null)}
-                    style={{
-                      padding:'38px 36px',
-                      cursor:'pointer',
-                      transition:'transform .22s',
-                      transform: hovered===sub.id ? 'translateY(-4px)' : 'none',
-                    }}>
-                    {/* Header */}
-                    <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:24 }}>
-                      <div style={{
-                        width:64, height:64, borderRadius:18, flexShrink:0,
-                        background: dark?`${sub.color}22`:`${sub.color}14`,
-                        border:`2px solid ${sub.color}55`,
-                        display:'flex', alignItems:'center', justifyContent:'center', fontSize:30,
-                        boxShadow:`0 0 24px ${sub.color}33`,
-                      }}>{sub.icon}</div>
-                      <div>
-                        <div style={{
-                          fontSize:22, fontWeight:900, color:t1,
-                          fontFamily:"'Space Grotesk',sans-serif", letterSpacing:'-.02em',
-                        }}>{sub.label}</div>
-                        <div style={{
-                          fontSize:12, fontWeight:700, color:sub.color,
-                          letterSpacing:'.08em', textTransform:'uppercase', marginTop:2,
-                        }}>{sub.sublabel}</div>
-                      </div>
-                      {/* FAOL belgisi */}
-                      <div style={{
-                        marginLeft:'auto',
-                        display:'flex', alignItems:'center', gap:6,
-                        padding:'5px 12px', borderRadius:100,
-                        background:`${sub.color}18`,
-                        border:`1.5px solid ${sub.color}55`,
-                        fontSize:11, fontWeight:800, color:sub.color,
-                      }}>
-                        <span style={{ width:7, height:7, borderRadius:'50%', background:sub.color, boxShadow:`0 0 8px ${sub.color}` }}/>
-                        FAOL
-                      </div>
-                    </div>
-
-                    <p style={{ fontSize:14.5, color:t2, lineHeight:1.7, marginBottom:24 }}>
-                      {sub.desc}
-                    </p>
-
-                    {/* Features */}
-                    <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:28 }}>
-                      {sub.features.map(f => (
-                        <span key={f} style={{
-                          padding:'5px 12px', borderRadius:100, fontSize:12, fontWeight:600,
-                          background:`${sub.color}15`,
-                          border:`1px solid ${sub.color}40`,
-                          color:dark?sub.color:'#374151',
-                        }}>{f}</span>
-                      ))}
-                    </div>
-
-                    {/* CTA */}
-                    <div style={{
-                      display:'flex', alignItems:'center', justifyContent:'center', gap:10,
-                      padding:'14px', borderRadius:13,
-                      background:`linear-gradient(135deg,${sub.color},${sub.colors[1]})`,
-                      color:'#fff', fontSize:15, fontWeight:700,
-                      boxShadow:`0 8px 28px ${sub.color}44`,
-                    }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                        <path d="M5 12h14M12 5l7 7-7 7" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      SignHand ni Ochish
-                    </div>
-                  </div>
-                </BorderGlow>
-              ) : (
-                /* INACTIVE — Tez kunda (bezakli) */
-                <div style={{
-                  borderRadius:22, overflow:'hidden', position:'relative',
-                  background: dark?'rgba(4,14,36,.78)':'rgba(248,250,252,.95)',
-                  border:`1px solid ${dark?`${sub.color}30`:sub.color+'22'}`,
-                  boxShadow: dark?`0 0 32px ${sub.color}18, inset 0 1px 0 rgba(255,255,255,.06)`:
-                                  `0 4px 24px ${sub.color}14`,
-                  transition:'box-shadow .3s',
-                }}>
-                  <style>{`@keyframes badge-float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-4px) rotate(2deg)}}`}</style>
-
-                  {/* Yuqori gradient chiziq */}
-                  <div style={{
-                    height:3,
-                    background:`linear-gradient(90deg, transparent, ${sub.color}88, ${sub.color}, ${sub.color}88, transparent)`,
-                  }}/>
-
-                  {/* "TEZ KUNDA" — yuqori o'rta badge */}
-                  <div style={{
-                    position:'absolute', top:14, left:'50%',
-                    transform:'translateX(-50%)',
-                    zIndex:6,
-                    display:'flex', alignItems:'center', gap:7,
-                    padding:'5px 16px', borderRadius:100,
-                    background: dark?`rgba(0,0,0,.7)`:'rgba(255,255,255,.9)',
-                    backdropFilter:'blur(12px)',
-                    border:`1.5px solid ${sub.color}66`,
-                    boxShadow:`0 0 18px ${sub.color}44, 0 4px 12px rgba(0,0,0,.3)`,
-                    animation:'badge-float 3s ease-in-out infinite',
-                    whiteSpace:'nowrap',
-                  }}>
-                    <span style={{
-                      width:7, height:7, borderRadius:'50%', flexShrink:0,
-                      background:sub.color,
-                      boxShadow:`0 0 8px ${sub.color}`,
-                      animation:'pulse 1.4s ease-in-out infinite',
-                    }}/>
-                    <span style={{
-                      fontSize:11, fontWeight:800, letterSpacing:'.12em',
-                      textTransform:'uppercase', color:sub.color,
-                    }}>Tez Kunda</span>
-                    <span style={{ fontSize:14 }}>🚀</span>
-                  </div>
-
-                  {/* Overlay — bosilmasin */}
-                  <div style={{ position:'absolute', inset:0, zIndex:5, cursor:'not-allowed' }}/>
-
-                  <div style={{ padding:'52px 36px 36px' }}>
-                    <div style={{ display:'flex', alignItems:'center', gap:16, marginBottom:18 }}>
-                      <div style={{
-                        width:64, height:64, borderRadius:18, flexShrink:0,
-                        background: dark?`${sub.color}20`:`${sub.color}12`,
-                        border:`2px solid ${sub.color}45`,
-                        display:'flex', alignItems:'center', justifyContent:'center', fontSize:30,
-                        boxShadow:`0 0 20px ${sub.color}22`,
-                      }}>{sub.icon}</div>
-                      <div>
-                        <div style={{
-                          fontSize:22, fontWeight:900, color:t1,
-                          fontFamily:"'Space Grotesk',sans-serif", letterSpacing:'-.02em',
-                        }}>{sub.label}</div>
-                        <div style={{
-                          fontSize:12, fontWeight:700, color:sub.color,
-                          letterSpacing:'.08em', textTransform:'uppercase', marginTop:2,
-                        }}>{sub.sublabel}</div>
-                      </div>
-                    </div>
-
-                    <p style={{ fontSize:14, color:t2, lineHeight:1.7, marginBottom:24, opacity:.85 }}>
-                      {sub.desc}
-                    </p>
-
-                    {/* Kutish paneli */}
-                    <div style={{
-                      padding:'14px 16px', borderRadius:13,
-                      background: dark?`${sub.color}0e`:`${sub.color}08`,
-                      border:`1.5px dashed ${sub.color}44`,
-                      display:'flex', alignItems:'center', gap:10,
-                    }}>
-                      <span style={{ fontSize:18 }}>⏳</span>
-                      <div>
-                        <div style={{ fontSize:12, fontWeight:700, color:sub.color, marginBottom:2 }}>
-                          Ishlab chiqilmoqda...
-                        </div>
-                        <div style={{ fontSize:11, color:t3 }}>
-                          Bu bo'lim tez orada sizga taqdim etiladi
-                        </div>
-                      </div>
-                      <div style={{ marginLeft:'auto', fontSize:18 }}>🔧</div>
-                    </div>
-                  </div>
-                </div>
-              )}
+          Noldan <span className="grad-text">alifbo ustasi</span> darajasigacha
+        </h1>
+        <p className="a-su d2" style={{ fontSize:'clamp(14.5px,1.4vw,17px)', lineHeight:1.8, color:t2, maxWidth:620, marginBottom:28 }}>
+          {totalLessons} ta bosqichli dars, {ALPHABET.length} ta daktil harfi va real-time tekshiruv.
+          Har bir harfni kamera orqali mashq qilasiz — AI to'g'ri bajarganingizni darrov aytadi.
+        </p>
+        <div className="a-su d3" style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
+          {[
+            { n: ALPHABET.length, l: 'Daktil harfi' },
+            { n: totalLessons,    l: 'Bosqichli dars' },
+            { n: PATH.length,     l: "O'quv bosqichi" },
+            { n: '∞',             l: 'Mashq — bepul' },
+          ].map(s => (
+            <div key={s.l} style={{
+              padding:'12px 20px', borderRadius:14, minWidth:118,
+              background:'var(--surf2)', border:'1px solid var(--brd)',
+            }}>
+              <div className="grad-text" style={{ fontSize:24, fontWeight:800, fontFamily:'var(--font-d)', letterSpacing:'-.04em' }}>{s.n}</div>
+              <div style={{ fontSize:11, color:t3, fontWeight:700, marginTop:2 }}>{s.l}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── Info banner ── */}
-      <section style={{ padding:'0 clamp(24px,5vw,80px)', maxWidth:1280, margin:'0 auto' }}>
-        <div style={{
-          padding:'24px 28px', borderRadius:16,
-          background: dark?'rgba(6,182,212,.08)':'rgba(6,182,212,.05)',
-          border:`1px solid ${dark?'rgba(6,182,212,.25)':'rgba(6,182,212,.2)'}`,
-          display:'flex', alignItems:'center', gap:16,
-        }}>
-          <div style={{ fontSize:28, flexShrink:0 }}>💡</div>
-          <div>
-            <div style={{ fontSize:14, fontWeight:700, color:dark?'#67e8f9':'#0891b2', marginBottom:4 }}>
-              Imo-Ishora Tili bo'limi haqida
+      {/* ══ ASOSIY KURS ══ */}
+      <section className="sec" style={{ paddingBottom:52 }}>
+        <BorderGlow backgroundColor={cardBg} glowColor="160 78 58"
+          borderRadius={24} glowRadius={58} glowIntensity={1.5} coneSpread={40}
+          colors={['#10b981','#4ade80','#a3e635']}>
+          <div className="grid-2" style={{ display:'grid', gridTemplateColumns:'1.15fr .85fr', gap:0 }}>
+
+            {/* Chap — kurs tavsifi */}
+            <div style={{ padding:'40px clamp(26px,3vw,40px)' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:20, flexWrap:'wrap' }}>
+                <div style={{
+                  width:60, height:60, borderRadius:18, flexShrink:0, fontSize:28,
+                  background:'rgba(16,185,129,.16)', border:'2px solid rgba(16,185,129,.4)',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  boxShadow:'0 0 26px rgba(16,185,129,.28)',
+                }}>🖐️</div>
+                <div>
+                  <div style={{ fontSize:22, fontWeight:800, color:t1, fontFamily:'var(--font-d)', letterSpacing:'-.035em' }}>
+                    O'zbek Daktil Alifbosi
+                  </div>
+                  <div style={{ fontSize:11.5, fontWeight:800, color:'var(--acc)', letterSpacing:'.1em', textTransform:'uppercase', marginTop:3 }}>
+                    Asosiy kurs · Boshlang'ich daraja
+                  </div>
+                </div>
+                <span style={{
+                  marginLeft:'auto', display:'flex', alignItems:'center', gap:6,
+                  padding:'5px 13px', borderRadius:100, whiteSpace:'nowrap',
+                  background:'var(--ok-bg)', border:'1.5px solid var(--ok-b)',
+                  fontSize:10.5, fontWeight:800, color:'var(--ok)', letterSpacing:'.08em',
+                }}>
+                  <span style={{ width:7, height:7, borderRadius:'50%', background:'var(--ok)', animation:'pulse 2s ease-in-out infinite' }}/>
+                  FAOL
+                </span>
+              </div>
+
+              <p style={{ fontSize:14.5, color:t2, lineHeight:1.78, marginBottom:22 }}>
+                MediaPipe AI qo'lingizning 21 ta va yuzingizning 468 ta nuqtasini kuzatadi.
+                Har bir harfni ko'rsatganingizda tizim uni tanib, to'g'riligini baholaydi —
+                o'qituvchisiz, mustaqil mashq qilasiz.
+              </p>
+
+              <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:28 }}>
+                {['Real-time tekshiruv','Yuz mimikasi grammatikasi','Ovozli tarjimon','XP va daraja','Sertifikat'].map(f => (
+                  <span key={f} style={{
+                    padding:'6px 13px', borderRadius:100, fontSize:11.5, fontWeight:700,
+                    background:'var(--surf2)', border:'1px solid var(--brd2)', color:t2,
+                  }}>{f}</span>
+                ))}
+              </div>
+
+              <div style={{ display:'flex', gap:11, flexWrap:'wrap' }}>
+                <button onClick={start} className="btn btn-p btn-lg">
+                  <span>
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M6 3.5l13 8.5-13 8.5V3.5z"/>
+                    </svg>
+                    Darsni boshlash
+                  </span>
+                </button>
+                <button onClick={() => navigateTo('about')} className="btn btn-g btn-lg">
+                  Qanday ishlaydi?
+                </button>
+              </div>
             </div>
-            <div style={{ fontSize:13.5, color:t2, lineHeight:1.65 }}>
-              SignHand da qo'l va yuz harakatlari orqali o'zbek daktil alifbosini o'rganasiz.
-              MediaPipe AI texnologiyasi qo'l skeletoni va yuz mimikasini tahlil qiladi.
-              29 ta harf, 24 bosqichli dars, real-time tarjimon mavjud.
+
+            {/* O'ng — alifbo panjarasi */}
+            <div style={{
+              padding:'40px clamp(26px,3vw,36px)',
+              background:'var(--surf2)',
+              borderLeft:'1px solid var(--brd)',
+              display:'flex', flexDirection:'column',
+            }}>
+              <div className="label" style={{ marginBottom:14 }}>Kursdagi harflar</div>
+              <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(46px,1fr))', gap:7 }}>
+                {ALPHABET.map((L, i) => (
+                  <div key={L} title={`${L} harfi`} style={{
+                    aspectRatio:'1', borderRadius:11,
+                    display:'flex', alignItems:'center', justifyContent:'center',
+                    background:'var(--surf)', border:'1px solid var(--brd)',
+                    fontFamily:'var(--font-d)', fontWeight:800, fontSize:15, color:t2,
+                    transition:'transform .18s, border-color .18s, color .18s, background .18s',
+                    animation:`pop .3s ${i * 0.014}s both`, cursor:'default',
+                  }}
+                    onMouseOver={e => { e.currentTarget.style.background='linear-gradient(140deg,var(--acc-v),var(--acc2-v))'; e.currentTarget.style.color='#04180f'; e.currentTarget.style.borderColor='transparent'; e.currentTarget.style.transform='translateY(-3px)'; }}
+                    onMouseOut={e  => { e.currentTarget.style.background='var(--surf)'; e.currentTarget.style.color='var(--t2)'; e.currentTarget.style.borderColor='var(--brd)'; e.currentTarget.style.transform='none'; }}>
+                    {L}
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop:'auto', paddingTop:18, fontSize:12, color:t3, lineHeight:1.6 }}>
+                Statik va harakatli harflar birga — har biri alohida darsda mustahkamlanadi.
+              </div>
             </div>
           </div>
+        </BorderGlow>
+      </section>
+
+      {/* ══ O'QUV YO'LI ══ */}
+      <section className="sec">
+        <div className="sec-head"><h2>O'quv yo'li</h2><div className="rule"/></div>
+        <p style={{ fontSize:14.5, color:t2, marginTop:-20, marginBottom:30 }}>
+          Darslar ketma-ket ochiladi — oldingisini tugatmasdan keyingisiga o'tolmaysiz.
+        </p>
+
+        <div className="grid-2" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:14 }}>
+          {PATH.map((p, i) => (
+            <div key={p.n}
+              onMouseEnter={() => setHoverStage(i)}
+              onMouseLeave={() => setHoverStage(null)}
+              style={{
+                position:'relative', padding:'26px 22px', borderRadius:20,
+                background:'var(--surf)',
+                border:`1px solid ${hoverStage === i ? p.c + '77' : 'var(--brd)'}`,
+                boxShadow: hoverStage === i ? `0 12px 34px ${p.c}22` : 'none',
+                transform: hoverStage === i ? 'translateY(-4px)' : 'none',
+                transition:'all .24s', animation:`su .45s ${i * 0.07}s both`,
+              }}>
+
+              {/* bosqichlarni bog'lovchi chiziq */}
+              {i < PATH.length - 1 && (
+                <div aria-hidden="true" style={{
+                  position:'absolute', top:46, right:-15, width:15, height:2, zIndex:2,
+                  background:`linear-gradient(90deg,${p.c},transparent)`,
+                }}/>
+              )}
+
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+                <div style={{
+                  width:48, height:48, borderRadius:15, fontSize:22,
+                  background:`${p.c}1c`, border:`1.5px solid ${p.c}4d`,
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                }}>{p.icon}</div>
+                <span style={{
+                  fontFamily:'var(--font-d)', fontSize:27, fontWeight:800,
+                  color:p.c, opacity:.3, letterSpacing:'-.05em',
+                }}>{p.n}</span>
+              </div>
+
+              <div style={{ fontFamily:'var(--font-d)', fontSize:16.5, fontWeight:800, color:t1, marginBottom:5 }}>
+                {p.title}
+              </div>
+              <div style={{ fontSize:12, color:t3, lineHeight:1.55, marginBottom:16 }}>{p.sub}</div>
+
+              <div style={{ display:'flex', flexDirection:'column', gap:7, marginBottom:16 }}>
+                {p.lessons.map((l, k) => (
+                  <div key={l} style={{ display:'flex', alignItems:'center', gap:9, fontSize:12.5, color:t2 }}>
+                    <span style={{
+                      width:19, height:19, borderRadius:6, flexShrink:0,
+                      background:`${p.c}18`, border:`1px solid ${p.c}3a`,
+                      display:'flex', alignItems:'center', justifyContent:'center',
+                      fontSize:9.5, fontWeight:800, color:p.c,
+                    }}>{k + 1}</span>
+                    {l}
+                  </div>
+                ))}
+              </div>
+
+              <div style={{
+                paddingTop:13, borderTop:'1px dashed var(--brd)',
+                fontSize:11, fontWeight:800, color:p.c, letterSpacing:'.06em', textTransform:'uppercase',
+              }}>
+                {p.lessons.length} ta dars
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══ TEZ KUNDA ══ */}
+      <section className="sec">
+        <div className="sec-head"><h2>Tez kunda</h2><div className="rule"/></div>
+        <div className="grid-3" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:14 }}>
+          {SOON.map(s => (
+            <div key={s.label} style={{
+              position:'relative', overflow:'hidden',
+              padding:'24px 22px', borderRadius:18,
+              background:'var(--surf2)', border:`1px dashed ${s.c}55`,
+            }}>
+              <div aria-hidden="true" style={{
+                position:'absolute', top:0, left:0, right:0, height:2,
+                background:`linear-gradient(90deg,transparent,${s.c},transparent)`, opacity:.7,
+              }}/>
+              <div style={{ display:'flex', alignItems:'center', gap:13, marginBottom:12 }}>
+                <div style={{
+                  width:44, height:44, borderRadius:13, fontSize:20, flexShrink:0,
+                  background:`${s.c}18`, border:`1px solid ${s.c}3a`,
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                }}>{s.icon}</div>
+                <div>
+                  <div style={{ fontFamily:'var(--font-d)', fontSize:15, fontWeight:800, color:t1 }}>{s.label}</div>
+                  <div style={{ fontSize:10, fontWeight:800, color:s.c, letterSpacing:'.1em', textTransform:'uppercase', marginTop:2 }}>
+                    ⏳ Ishlab chiqilmoqda
+                  </div>
+                </div>
+              </div>
+              <p style={{ fontSize:12.8, color:t2, lineHeight:1.7 }}>{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ══ PASTKI CTA ══ */}
+      <section className="sec" style={{ paddingBottom:28 }}>
+        <div style={{
+          padding:'32px clamp(24px,4vw,44px)', borderRadius:22,
+          background:'var(--surf2)', border:'1px solid var(--brd2)',
+          display:'flex', alignItems:'center', gap:24, flexWrap:'wrap',
+        }}>
+          <div style={{
+            width:56, height:56, borderRadius:17, flexShrink:0, fontSize:26,
+            background:'linear-gradient(135deg,var(--acc-v),var(--acc2-v))',
+            display:'flex', alignItems:'center', justifyContent:'center',
+            boxShadow:'0 8px 24px rgba(16,185,129,.35)',
+          }}>🚀</div>
+          <div style={{ flex:'1 1 300px' }}>
+            <div style={{ fontFamily:'var(--font-d)', fontSize:19, fontWeight:800, color:t1, marginBottom:5 }}>
+              Kamerangizni yoqing va birinchi harfni bugun o'rganing
+            </div>
+            <div style={{ fontSize:13.5, color:t2, lineHeight:1.65 }}>
+              Ro'yxatdan o'tish shart emas — hammasi brauzeringizda ishlaydi va video hech qayerga yuborilmaydi.
+            </div>
+          </div>
+          <button onClick={start} className="btn btn-p btn-lg">
+            <span>Boshlash →</span>
+          </button>
         </div>
       </section>
     </div>
